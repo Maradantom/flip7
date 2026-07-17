@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flip 7 — Score</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0e17; --surface: #1a1927; --card: #22213a; --accent: #f7c948;
+    --accent2: #e84855; --flip: #3ecf8e; --bonus: #f4a228; --special: #6c8fff;
+    --text: #fffffe; --muted: #a7a9be; --border: rgba(255,255,255,0.07); --radius: 16px;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+  header { width: 100%; padding: 24px 32px 0; display: flex; align-items: center; gap: 12px; }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -1px; }
+  .logo span { color: var(--accent); }
+  .round-badge { margin-left: auto; background: var(--card); border: 1px solid var(--border); border-radius: 99px; padding: 6px 14px; font-size: 13px; color: var(--muted); font-weight: 500; }
+  .round-badge strong { color: var(--text); }
+  .screen { display: none; width: 100%; max-width: 700px; padding: 24px 20px 48px; }
+  .screen.active { display: block; }
+  h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 22px; margin-bottom: 6px; }
+  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+  .player-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  input[type="text"] { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; outline: none; transition: border-color .2s; }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--muted); }
+  .btn { background: var(--accent); color: #0f0e17; border: none; border-radius: 10px; padding: 12px 20px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; transition: opacity .15s, transform .1s; white-space: nowrap; }
+  .btn:hover { opacity: .9; } .btn:active { transform: scale(.97); }
+  .btn.secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+  .btn.danger { background: var(--accent2); color: #fff; }
+  .btn.success { background: var(--flip); color: #0f0e17; }
+  .btn.full { width: 100%; margin-top: 8px; }
+  .player-list { margin-bottom: 20px; }
+  .player-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 99px; padding: 6px 12px 6px 14px; margin: 4px; font-size: 14px; }
+  .player-chip button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
+  .player-chip button:hover { color: var(--accent2); }
+
+  /* Player card in entry */
+  .player-cards { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+  .player-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
+  .player-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .player-name-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; }
+  .bust-toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; }
+  .bust-toggle input { accent-color: var(--accent2); width: 16px; height: 16px; cursor: pointer; }
+
+  /* Section labels */
+  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px; margin-top: 14px; }
+  .section-label.num { color: var(--muted); }
+  .section-label.bonus { color: var(--bonus); }
+  .section-label.special { color: var(--special); }
+
+  /* Cards grid */
+  .cards-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+
+  /* Number cards */
+  .card-btn {
+    width: 42px; height: 50px; background: var(--surface); border: 2px solid var(--border);
+    border-radius: 8px; color: var(--muted); font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 15px; cursor: pointer; transition: all .15s; display: flex; align-items: center;
+    justify-content: center; flex-direction: column;
+  }
+  .card-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .card-btn.selected { background: var(--accent); border-color: var(--accent); color: #0f0e17; }
+  .card-btn .card-count { font-size: 9px; font-family: 'Inter', sans-serif; font-weight: 600; margin-top: 1px; opacity: .8; }
+
+  /* Bonus cards */
+  .bonus-btn {
+    height: 44px; padding: 0 12px; background: var(--surface); border: 2px solid rgba(244,162,40,.2);
+    border-radius: 8px; color: var(--bonus); font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 14px; cursor: pointer; transition: all .15s; display: flex; align-items: center;
+    justify-content: center; flex-direction: column; white-space: nowrap;
+  }
+  .bonus-btn:hover { border-color: var(--bonus); }
+  .bonus-btn.selected { background: var(--bonus); border-color: var(--bonus); color: #0f0e17; }
+  .bonus-btn .card-count { font-size: 9px; font-family: 'Inter', sans-serif; font-weight: 600; margin-top: 1px; opacity: .8; }
+
+  /* Special cards */
+  .special-btn {
+    height: 44px; padding: 0 12px; background: var(--surface); border: 2px solid rgba(108,143,255,.2);
+    border-radius: 8px; color: var(--special); font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 13px; cursor: pointer; transition: all .15s; display: flex; align-items: center;
+    justify-content: center; flex-direction: column; white-space: nowrap;
+  }
+  .special-btn:hover { border-color: var(--special); }
+  .special-btn.selected { background: var(--special); border-color: var(--special); color: #fff; }
+  .special-btn .card-count { font-size: 9px; font-family: 'Inter', sans-serif; font-weight: 600; margin-top: 1px; opacity: .8; }
+
+  .flip7-toggle { margin-top: 14px; display: flex; align-items: center; gap: 10px; background: rgba(62,207,142,.08); border: 1px solid rgba(62,207,142,.2); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+  .flip7-toggle input { accent-color: var(--flip); width: 16px; height: 16px; cursor: pointer; }
+  .flip7-toggle label { color: var(--flip); font-weight: 600; font-size: 14px; cursor: pointer; }
+  .flip7-toggle span { color: var(--muted); font-size: 12px; margin-left: auto; }
+  .live-score { font-size: 13px; color: var(--muted); margin-top: 10px; text-align: right; }
+  .live-score strong { color: var(--accent); font-size: 18px; font-family: 'Syne', sans-serif; }
+  .player-card.busted { opacity: .5; border-color: rgba(232,72,85,.3); }
+
+  /* Scoreboard */
+  .scoreboard { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .score-row { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; display: flex; align-items: center; gap: 12px; transition: border-color .2s; }
+  .score-row.leader { border-color: var(--accent); background: rgba(247,201,72,.06); }
+  .score-row .rank { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; width: 30px; text-align: center; color: var(--muted); }
+  .score-row.leader .rank { color: var(--accent); }
+  .score-row .sname { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; flex: 1; }
+  .score-row .round-pts { font-size: 13px; color: var(--muted); text-align: right; }
+  .score-row .total { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: var(--accent); min-width: 56px; text-align: right; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .tag { font-size: 11px; border-radius: 99px; padding: 2px 8px; font-weight: 600; }
+  .tag.flip { background: rgba(62,207,142,.15); color: var(--flip); }
+  .tag.bust { background: rgba(232,72,85,.15); color: var(--accent2); }
+  .tag.bonus { background: rgba(244,162,40,.15); color: var(--bonus); }
+  .tag.special { background: rgba(108,143,255,.15); color: var(--special); }
+  .actions-row { display: flex; gap: 10px; }
+  .actions-row .btn { flex: 1; }
+  .winner-banner { background: linear-gradient(135deg, rgba(247,201,72,.15), rgba(247,201,72,.05)); border: 1px solid rgba(247,201,72,.3); border-radius: var(--radius); padding: 20px 24px; text-align: center; margin-bottom: 24px; }
+  .winner-banner .crown { font-size: 32px; margin-bottom: 8px; }
+  .winner-banner h3 { font-family: 'Syne', sans-serif; font-size: 20px; margin-bottom: 4px; }
+  .winner-banner p { color: var(--muted); font-size: 14px; }
+  .history-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; font-weight: 600; }
+  .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .history-table th { text-align: left; color: var(--muted); font-weight: 500; padding: 4px 8px; border-bottom: 1px solid var(--border); }
+  .history-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); }
+  .history-table td:not(:first-child) { text-align: center; color: var(--muted); }
+  .history-table td.pts { color: var(--text); font-weight: 600; }
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--flip); color: #0f0e17; font-weight: 700; font-size: 14px; padding: 10px 20px; border-radius: 99px; transition: transform .3s ease; z-index: 100; white-space: nowrap; }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  @media (max-width: 480px) { .card-btn { width: 36px; height: 44px; font-size: 13px; } .actions-row { flex-direction: column; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">FLIP <span>7</span></div>
+  <div class="round-badge" id="roundBadge" style="display:none">Manche <strong id="roundNum">1</strong></div>
+</header>
+
+<!-- SCREEN 1: Setup -->
+<div class="screen active" id="screenSetup">
+  <h2>Nouvelle partie</h2>
+  <p class="subtitle">Ajoute les joueurs, puis lance la partie.</p>
+  <div class="player-input-row">
+    <input type="text" id="playerNameInput" placeholder="Nom du joueur…" maxlength="20">
+    <button class="btn" onclick="addPlayer()">+ Ajouter</button>
+  </div>
+  <div class="player-list" id="playerList"></div>
+  <button class="btn full" onclick="startGame()" id="startBtn" disabled>Démarrer la partie →</button>
+</div>
+
+<!-- SCREEN 2: Score Entry -->
+<div class="screen" id="screenEntry">
+  <h2 id="entryTitle">Fin de manche 1</h2>
+  <p class="subtitle">Sélectionne les cartes de chaque joueur. Coche "Crevé" si dépassé.</p>
+  <div class="player-cards" id="playerCards"></div>
+  <button class="btn full success" onclick="validateRound()">Valider la manche →</button>
+</div>
+
+<!-- SCREEN 3: Scoreboard -->
+<div class="screen" id="screenBoard">
+  <div id="winnerBanner" style="display:none"></div>
+  <h2>Classement</h2>
+  <p class="subtitle" id="boardSubtitle"></p>
+  <div class="scoreboard" id="scoreboard"></div>
+  <div id="historySection" style="margin-bottom:24px; display:none">
+    <div class="history-title">Historique des manches</div>
+    <table class="history-table" id="historyTable"></table>
+  </div>
+  <div class="actions-row">
+    <button class="btn secondary" id="nextRoundBtn" onclick="goEntry()">Manche suivante →</button>
+    <button class="btn danger" onclick="resetGame()">Nouvelle partie</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── CARD DEFINITIONS ──────────────────────────────────────────────
+const NUM_CARDS = [0,1,2,3,4,5,6,7,8,9,10,11,12];
+
+// Bonus cards: id, label, effect type, value
+const BONUS_CARDS = [
+  { id:'x2',  label:'×2',  type:'multiply', val:2 },
+  { id:'p2',  label:'+2',  type:'add',      val:2 },
+  { id:'p4',  label:'+4',  type:'add',      val:4 },
+  { id:'p6',  label:'+6',  type:'add',      val:6 },
+  { id:'p8',  label:'+8',  type:'add',      val:8 },
+  { id:'p10', label:'+10', type:'add',      val:10 },
+];
+
+// Special cards: id, label (informational only — no point effect)
+const SPECIAL_CARDS = [
+  { id:'stop',   label:'🔒 Stop' },
+  { id:'chance', label:'♥ Seconde Chance' },
+  { id:'suite',  label:'⚡ Trois à la suite' },
+];
+
+const FLIP7_BONUS = 15;
+const WIN_SCORE   = 200;
+
+// ── STATE ─────────────────────────────────────────────────────────
+let players = [];
+let round   = 1;
+let selections = {}; // per-player per-round: { nums:{val:count}, bonus:{id:count}, special:{id:count}, flip7, bust }
+
+// ── SETUP ─────────────────────────────────────────────────────────
+document.getElementById('playerNameInput').addEventListener('keydown', e => { if(e.key==='Enter') addPlayer(); });
+
+function addPlayer() {
+  const input = document.getElementById('playerNameInput');
+  const name  = input.value.trim();
+  if (!name || players.find(p => p.name.toLowerCase()===name.toLowerCase())) { shakeInput(input); return; }
+  players.push({ name, total:0, history:[] });
+  input.value = ''; input.focus();
+  renderSetup();
+}
+
+function removePlayer(i) { players.splice(i,1); renderSetup(); }
+
+function renderSetup() {
+  document.getElementById('playerList').innerHTML = players.map((p,i) =>
+    `<span class="player-chip">${p.name} <button onclick="removePlayer(${i})">×</button></span>`
+  ).join('');
+  document.getElementById('startBtn').disabled = players.length < 2;
+}
+
+function startGame() {
+  round = 1;
+  players.forEach(p => { p.total=0; p.history=[]; });
+  document.getElementById('roundBadge').style.display = '';
+  goEntry();
+}
+
+// ── ENTRY ─────────────────────────────────────────────────────────
+function goEntry() {
+  updateRoundBadge();
+  document.getElementById('entryTitle').textContent = `Fin de manche ${round}`;
+  initSelections();
+  renderPlayerCards();
+  show('screenEntry');
+}
+
+function initSelections() {
+  selections = {};
+  players.forEach(p => {
+    selections[p.name] = { nums:{}, bonus:{}, special:{}, flip7:false, bust:false };
+  });
+}
+
+function safeId(name) { return name.replace(/[^a-zA-Z0-9]/g, '_'); }
+
+function renderPlayerCards() {
+  document.getElementById('playerCards').innerHTML = players.map(p => buildPlayerCard(p)).join('');
+  players.forEach(p => updateLiveScore(p.name));
+}
+
+function buildPlayerCard(p) {
+  const sid = safeId(p.name);
+
+  const numBtns = NUM_CARDS.map(v =>
+    `<button class="card-btn" id="cb-${sid}-${v}" onclick="toggleNum('${p.name}',${v})">${v}<span class="card-count" id="cc-${sid}-${v}"></span></button>`
+  ).join('');
+
+  const bonusBtns = BONUS_CARDS.map(b =>
+    `<button class="bonus-btn" id="bb-${sid}-${b.id}" onclick="toggleBonus('${p.name}','${b.id}')">${b.label}<span class="card-count" id="bc-${sid}-${b.id}"></span></button>`
+  ).join('');
+
+  const specialBtns = SPECIAL_CARDS.map(s =>
+    `<button class="special-btn" id="sb-${sid}-${s.id}" onclick="toggleSpecial('${p.name}','${s.id}')">${s.label}<span class="card-count" id="sc-${sid}-${s.id}"></span></button>`
+  ).join('');
+
+  return `
+  <div class="player-card" id="pc-${sid}">
+    <div class="player-card-header">
+      <span class="player-name-label">${p.name}</span>
+      <label class="bust-toggle">
+        <input type="checkbox" onchange="toggleBust('${p.name}',this.checked)"> Crevé 💥
+      </label>
+    </div>
+
+    <div class="section-label num">Cartes numéro</div>
+    <div class="cards-grid">${numBtns}</div>
+
+    <div class="section-label bonus">Cartes bonus</div>
+    <div class="cards-grid">${bonusBtns}</div>
+
+    <div class="section-label special">Cartes spéciales</div>
+    <div class="cards-grid">${specialBtns}</div>
+
+    <label class="flip7-toggle">
+      <input type="checkbox" id="f7cb-${sid}" onchange="toggleFlip7('${p.name}',this.checked)">
+      <label for="f7cb-${sid}">Flip 7 réussi ! 🃏</label>
+      <span>+${FLIP7_BONUS} pts bonus</span>
+    </label>
+    <div class="live-score" id="ls-${sid}">Score ce tour : <strong>0</strong></div>
+  </div>`;
+}
+
+// Cycle 0→1→2→3→0 on each click
+function cycleCount(obj, key) {
+  obj[key] = ((obj[key]||0) + 1) % 4;
+}
+
+function toggleNum(name, val) {
+  if (selections[name].bust) return;
+  cycleCount(selections[name].nums, val);
+  const sid = safeId(name);
+  const count = selections[name].nums[val]||0;
+  const btn = document.getElementById(`cb-${sid}-${val}`);
+  btn.classList.toggle('selected', count>0);
+  document.getElementById(`cc-${sid}-${val}`).textContent = count>1 ? `×${count}` : '';
+  updateLiveScore(name);
+}
+
+function toggleBonus(name, id) {
+  if (selections[name].bust) return;
+  cycleCount(selections[name].bonus, id);
+  const sid = safeId(name);
+  const count = selections[name].bonus[id]||0;
+  const btn = document.getElementById(`bb-${sid}-${id}`);
+  btn.classList.toggle('selected', count>0);
+  document.getElementById(`bc-${sid}-${id}`).textContent = count>1 ? `×${count}` : '';
+  updateLiveScore(name);
+}
+
+function toggleSpecial(name, id) {
+  if (selections[name].bust) return;
+  cycleCount(selections[name].special, id);
+  const sid = safeId(name);
+  const count = selections[name].special[id]||0;
+  const btn = document.getElementById(`sb-${sid}-${id}`);
+  btn.classList.toggle('selected', count>0);
+  document.getElementById(`sc-${sid}-${id}`).textContent = count>1 ? `×${count}` : '';
+  // specials have no point value, just visual tracking
+  updateLiveScore(name);
+}
+
+function toggleBust(name, busted) {
+  const sel = selections[name];
+  sel.bust = busted; sel.flip7 = false;
+  const sid = safeId(name);
+  document.getElementById(`f7cb-${sid}`).checked = false;
+  document.getElementById(`pc-${sid}`).classList.toggle('busted', busted);
+  // disable all interactive buttons
+  ['cb','bb','sb'].forEach(prefix => {
+    document.querySelectorAll(`[id^="${prefix}-${sid}-"]`).forEach(b => b.disabled = busted);
+  });
+  updateLiveScore(name);
+}
+
+function toggleFlip7(name, val) {
+  if (selections[name].bust) return;
+  selections[name].flip7 = val;
+  updateLiveScore(name);
+}
+
+// ── SCORE CALCULATION ─────────────────────────────────────────────
+// Rules:
+//   1. Sum all number cards (face value × count)
+//   2. Apply +N bonus cards
+//   3. Apply ×2 if present (once, at the end)
+//   4. Add +15 if Flip 7
+//   Special cards (Stop, Seconde Chance, Trois à la suite) are tracked but have no point value
+function calcRoundScore(sel) {
+  if (sel.bust) return 0;
+
+  // 1. Number cards
+  let base = Object.entries(sel.nums).reduce((acc,[v,c]) => acc + Number(v)*c, 0);
+
+  // 2. Add bonus: +2 +4 +6 +8 +10
+  BONUS_CARDS.filter(b => b.type==='add').forEach(b => {
+    const count = sel.bonus[b.id]||0;
+    base += b.val * count;
+  });
+
+  // 3. Multiply ×2 (applied once if card present, regardless of count)
+  if (sel.bonus['x2'] && sel.bonus['x2']>0) base *= 2;
+
+  // 4. Flip 7 bonus
+  if (sel.flip7) base += FLIP7_BONUS;
+
+  return base;
+}
+
+function updateLiveScore(name) {
+  const pts = calcRoundScore(selections[name]);
+  const sid = safeId(name);
+  document.getElementById(`ls-${sid}`).innerHTML = `Score ce tour : <strong>${pts}</strong>`;
+}
+
+// ── VALIDATE ROUND ────────────────────────────────────────────────
+function validateRound() {
+  players.forEach(p => {
+    const sel = selections[p.name];
+    const pts = calcRoundScore(sel);
+    p.total += pts;
+    p.history.push({ nums:{...sel.nums}, bonus:{...sel.bonus}, special:{...sel.special}, flip7:sel.flip7, bust:sel.bust, pts });
+  });
+  round++;
+  showToast('✓ Manche enregistrée !');
+  renderScoreboard();
+  show('screenBoard');
+}
+
+// ── SCOREBOARD ────────────────────────────────────────────────────
+function renderScoreboard() {
+  const sorted = [...players].sort((a,b) => b.total-a.total);
+  const currentRound = round-1;
+  document.getElementById('boardSubtitle').textContent = `Après ${currentRound} manche${currentRound>1?'s':''}`;
+  updateRoundBadge();
+
+  const winner = sorted[0].total >= WIN_SCORE ? sorted[0] : null;
+  const banner = document.getElementById('winnerBanner');
+  if (winner) {
+    banner.style.display = '';
+    banner.innerHTML = `<div class="winner-banner"><div class="crown">🏆</div><h3>${winner.name} remporte la partie !</h3><p>${winner.total} points — Fin de partie</p></div>`;
+    document.getElementById('nextRoundBtn').style.display = 'none';
+  } else {
+    banner.style.display = 'none';
+    document.getElementById('nextRoundBtn').style.display = '';
+  }
+
+  document.getElementById('scoreboard').innerHTML = sorted.map((p,i) => {
+    const last = p.history[p.history.length-1];
+    const tags = [];
+    if (last?.flip7) tags.push('<span class="tag flip">Flip 7 🃏</span>');
+    if (last?.bust)  tags.push('<span class="tag bust">Crevé 💥</span>');
+    const hasBonus   = last && Object.values(last.bonus||{}).some(c=>c>0);
+    const hasSpecial = last && Object.values(last.special||{}).some(c=>c>0);
+    if (hasBonus)   tags.push('<span class="tag bonus">Bonus 🃏</span>');
+    if (hasSpecial) tags.push('<span class="tag special">Spéciale ⚡</span>');
+    return `
+    <div class="score-row ${i===0?'leader':''}">
+      <div class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
+      <div style="flex:1">
+        <div class="sname">${p.name}</div>
+        <div class="tags">${tags.join('')}</div>
+      </div>
+      <div>
+        <div class="round-pts">+${last?.pts??0} ce tour</div>
+        <div class="total">${p.total}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // History table
+  if (players[0].history.length>0) {
+    document.getElementById('historySection').style.display = '';
+    const headers = ['Manche',...players.map(p=>p.name)];
+    const headRow = `<tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>`;
+    const rows = Array.from({length:currentRound},(_,ri) =>
+      `<tr><td>#${ri+1}</td>${players.map(p => {
+        const h = p.history[ri];
+        if(!h) return '<td>—</td>';
+        const icons = (h.flip7?' 🃏':'')+(h.bust?' 💥':'');
+        return `<td class="pts">${h.pts}${icons}</td>`;
+      }).join('')}</tr>`
+    ).join('');
+    document.getElementById('historyTable').innerHTML = headRow+rows;
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────
+function show(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function updateRoundBadge() { document.getElementById('roundNum').textContent = round; }
+function shakeInput(el) { el.style.borderColor='var(--accent2)'; setTimeout(()=>el.style.borderColor='',800); el.focus(); }
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function resetGame() { if(!confirm('Recommencer une nouvelle partie ?')) return; players=[]; round=1; document.getElementById('roundBadge').style.display='none'; renderSetup(); show('screenSetup'); }
+</script>
+</body>
+</html>
