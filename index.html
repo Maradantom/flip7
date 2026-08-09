@@ -2,467 +2,783 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Flip 7 — Score</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@400;500;600&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0f0e17; --surface: #1a1927; --card: #22213a; --accent: #f7c948;
-    --accent2: #e84855; --flip: #3ecf8e; --bonus: #f4a228; --special: #6c8fff;
-    --text: #fffffe; --muted: #a7a9be; --border: rgba(255,255,255,0.07); --radius: 16px;
-  }
-  body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
-  header { width: 100%; padding: 24px 32px 0; display: flex; align-items: center; gap: 12px; }
-  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -1px; }
-  .logo span { color: var(--accent); }
-  .round-badge { margin-left: auto; background: var(--card); border: 1px solid var(--border); border-radius: 99px; padding: 6px 14px; font-size: 13px; color: var(--muted); font-weight: 500; }
-  .round-badge strong { color: var(--text); }
-  .screen { display: none; width: 100%; max-width: 700px; padding: 24px 20px 48px; }
-  .screen.active { display: block; }
-  h2 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 22px; margin-bottom: 6px; }
-  .subtitle { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
-  .player-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
-  input[type="text"] { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; color: var(--text); font-family: 'Inter', sans-serif; font-size: 15px; outline: none; transition: border-color .2s; }
-  input[type="text"]:focus { border-color: var(--accent); }
-  input[type="text"]::placeholder { color: var(--muted); }
-  .btn { background: var(--accent); color: #0f0e17; border: none; border-radius: 10px; padding: 12px 20px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; transition: opacity .15s, transform .1s; white-space: nowrap; }
-  .btn:hover { opacity: .9; } .btn:active { transform: scale(.97); }
-  .btn.secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-  .btn.danger { background: var(--accent2); color: #fff; }
-  .btn.success { background: var(--flip); color: #0f0e17; }
-  .btn.full { width: 100%; margin-top: 8px; }
-  .player-list { margin-bottom: 20px; }
-  .player-chip { display: inline-flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 99px; padding: 6px 12px 6px 14px; margin: 4px; font-size: 14px; }
-  .player-chip button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
-  .player-chip button:hover { color: var(--accent2); }
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
 
-  /* Player card in entry */
-  .player-cards { display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
-  .player-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; }
-  .player-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-  .player-name-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; }
-  .bust-toggle { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); cursor: pointer; }
-  .bust-toggle input { accent-color: var(--accent2); width: 16px; height: 16px; cursor: pointer; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Palette du jeu */
+  --cream:#f5edd6;
+  --cream2:#ede0c0;
+  --navy:#1a2744;
+  --red:#d42b2b;
+  --blue:#2255aa;
+  --gold:#e8a800;
+  --gold2:#f7c948;
+  --orange:#f4610a;
+  --green:#2a9d4e;
+  --purple:#7c3fbf;
 
-  /* Section labels */
-  .section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 8px; margin-top: 14px; }
-  .section-label.num { color: var(--muted); }
-  .section-label.bonus { color: var(--bonus); }
-  .section-label.special { color: var(--special); }
+  /* UI */
+  --bg:#12111a;
+  --surface:#1c1b2e;
+  --card-bg:#23213a;
+  --border:rgba(232,168,0,0.18);
+  --text:#f5edd6;
+  --muted:#a09878;
+  --radius:14px;
 
-  /* Cards grid */
-  .cards-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+  /* Metallic gradient */
+  --metal:linear-gradient(135deg,#c8a84b 0%,#f7e07a 30%,#e8a800 50%,#f7e07a 70%,#b8882b 100%);
+  --metal2:linear-gradient(135deg,#8a7a5a 0%,#d4c078 40%,#f7e07a 50%,#c8a848 70%,#7a6a3a 100%);
+  --metal-red:linear-gradient(135deg,#8b1a1a 0%,#d42b2b 40%,#ff6b6b 55%,#d42b2b 70%,#7a1010 100%);
+  --metal-blue:linear-gradient(135deg,#0d2a6e 0%,#2255aa 40%,#5599ff 55%,#2255aa 70%,#0a1e55 100%);
+  --metal-orange:linear-gradient(135deg,#8b3200 0%,#f4610a 40%,#ff9955 55%,#f4610a 70%,#7a2800 100%);
+  --metal-green:linear-gradient(135deg,#155a28 0%,#2a9d4e 40%,#55dd88 55%,#2a9d4e 70%,#104420 100%);
+}
 
-  /* Number cards */
-  .card-btn {
-    width: 42px; height: 50px; background: var(--surface); border: 2px solid var(--border);
-    border-radius: 8px; color: var(--muted); font-family: 'Syne', sans-serif; font-weight: 700;
-    font-size: 15px; cursor: pointer; transition: all .15s; display: flex; align-items: center;
-    justify-content: center; flex-direction: column;
-  }
-  .card-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .card-btn.selected { background: var(--accent); border-color: var(--accent); color: #0f0e17; }
-  .card-btn .card-count { font-size: 9px; font-family: 'Inter', sans-serif; font-weight: 600; margin-top: 1px; opacity: .8; }
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(232,168,0,0.12) 0%, transparent 70%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.012) 40px, rgba(255,255,255,0.012) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(255,255,255,0.012) 40px, rgba(255,255,255,0.012) 41px);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;
+  -webkit-tap-highlight-color:transparent;
+}
 
-  /* Bonus cards */
-  .bonus-btn {
-    height: 44px; padding: 0 12px; background: var(--surface); border: 2px solid rgba(244,162,40,.2);
-    border-radius: 8px; color: var(--bonus); font-family: 'Syne', sans-serif; font-weight: 700;
-    font-size: 14px; cursor: pointer; transition: all .15s; display: flex; align-items: center;
-    justify-content: center; flex-direction: column; white-space: nowrap;
-  }
-  .bonus-btn:hover { border-color: var(--bonus); }
-  .bonus-btn.selected { background: var(--bonus); border-color: var(--bonus); color: #0f0e17; }
-  .bonus-btn .card-count { font-size: 9px; font-family: 'Inter', sans-serif; font-weight: 600; margin-top: 1px; opacity: .8; }
+/* ══ HEADER ══ */
+header{
+  width:100%;max-width:720px;
+  padding:20px 20px 0;
+  display:flex;align-items:center;gap:12px;
+}
+.logo{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:38px;letter-spacing:2px;
+  background:var(--metal);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 2px 8px rgba(232,168,0,0.4));
+  line-height:1;
+}
+.logo-sub{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:13px;letter-spacing:3px;color:var(--muted);margin-top:-4px;
+}
+.round-badge{
+  margin-left:auto;
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:99px;padding:6px 14px;font-size:12px;color:var(--muted);font-weight:600;
+  letter-spacing:.5px;
+}
+.round-badge strong{color:var(--gold2)}
 
-  /* Special cards */
-  .special-btn {
-    height: 44px; padding: 0 12px; background: var(--surface); border: 2px solid rgba(108,143,255,.2);
-    border-radius: 8px; color: var(--special); font-family: 'Syne', sans-serif; font-weight: 700;
-    font-size: 13px; cursor: pointer; transition: all .15s; display: flex; align-items: center;
-    justify-content: center; flex-direction: column; white-space: nowrap;
-  }
-  .special-btn:hover { border-color: var(--special); }
-  .special-btn.selected { background: var(--special); border-color: var(--special); color: #fff; }
-  .special-btn .card-count { font-size: 9px; font-family: 'Inter', sans-serif; font-weight: 600; margin-top: 1px; opacity: .8; }
+/* ══ SCREENS ══ */
+.screen{display:none;width:100%;max-width:720px;padding:20px 16px 100px}
+.screen.active{display:block}
 
-  .flip7-toggle { margin-top: 14px; display: flex; align-items: center; gap: 10px; background: rgba(62,207,142,.08); border: 1px solid rgba(62,207,142,.2); border-radius: 10px; padding: 10px 14px; cursor: pointer; }
-  .flip7-toggle input { accent-color: var(--flip); width: 16px; height: 16px; cursor: pointer; }
-  .flip7-toggle label { color: var(--flip); font-weight: 600; font-size: 14px; cursor: pointer; }
-  .flip7-toggle span { color: var(--muted); font-size: 12px; margin-left: auto; }
-  .live-score { font-size: 13px; color: var(--muted); margin-top: 10px; text-align: right; }
-  .live-score strong { color: var(--accent); font-size: 18px; font-family: 'Syne', sans-serif; }
-  .player-card.busted { opacity: .5; border-color: rgba(232,72,85,.3); }
+h2{
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;
+  color:var(--cream);margin-bottom:4px;
+}
+.subtitle{color:var(--muted);font-size:13px;margin-bottom:22px;line-height:1.5}
 
-  /* Scoreboard */
-  .scoreboard { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-  .score-row { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; display: flex; align-items: center; gap: 12px; transition: border-color .2s; }
-  .score-row.leader { border-color: var(--accent); background: rgba(247,201,72,.06); }
-  .score-row .rank { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; width: 30px; text-align: center; color: var(--muted); }
-  .score-row.leader .rank { color: var(--accent); }
-  .score-row .sname { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; flex: 1; }
-  .score-row .round-pts { font-size: 13px; color: var(--muted); text-align: right; }
-  .score-row .total { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px; color: var(--accent); min-width: 56px; text-align: right; }
-  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
-  .tag { font-size: 11px; border-radius: 99px; padding: 2px 8px; font-weight: 600; }
-  .tag.flip { background: rgba(62,207,142,.15); color: var(--flip); }
-  .tag.bust { background: rgba(232,72,85,.15); color: var(--accent2); }
-  .tag.bonus { background: rgba(244,162,40,.15); color: var(--bonus); }
-  .tag.special { background: rgba(108,143,255,.15); color: var(--special); }
-  .actions-row { display: flex; gap: 10px; }
-  .actions-row .btn { flex: 1; }
-  .winner-banner { background: linear-gradient(135deg, rgba(247,201,72,.15), rgba(247,201,72,.05)); border: 1px solid rgba(247,201,72,.3); border-radius: var(--radius); padding: 20px 24px; text-align: center; margin-bottom: 24px; }
-  .winner-banner .crown { font-size: 32px; margin-bottom: 8px; }
-  .winner-banner h3 { font-family: 'Syne', sans-serif; font-size: 20px; margin-bottom: 4px; }
-  .winner-banner p { color: var(--muted); font-size: 14px; }
-  .history-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; font-weight: 600; }
-  .history-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .history-table th { text-align: left; color: var(--muted); font-weight: 500; padding: 4px 8px; border-bottom: 1px solid var(--border); }
-  .history-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); }
-  .history-table td:not(:first-child) { text-align: center; color: var(--muted); }
-  .history-table td.pts { color: var(--text); font-weight: 600; }
-  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--flip); color: #0f0e17; font-weight: 700; font-size: 14px; padding: 10px 20px; border-radius: 99px; transition: transform .3s ease; z-index: 100; white-space: nowrap; }
-  #toast.show { transform: translateX(-50%) translateY(0); }
-  @media (max-width: 480px) { .card-btn { width: 36px; height: 44px; font-size: 13px; } .actions-row { flex-direction: column; } }
+/* ══ DECORATIVE DIVIDER ══ */
+.divider{
+  display:flex;align-items:center;gap:10px;margin:6px 0 20px;
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.divider span{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:3px;color:var(--gold);opacity:.7}
+
+/* ══ SETUP ══ */
+.player-input-row{display:flex;gap:8px;margin-bottom:12px}
+input[type="text"]{
+  flex:1;background:rgba(255,255,255,0.04);
+  border:1.5px solid var(--border);border-radius:10px;
+  padding:13px 14px;color:var(--cream);font-family:'Inter',sans-serif;font-size:15px;
+  outline:none;transition:border-color .2s;min-width:0;
+}
+input[type="text"]:focus{border-color:var(--gold)}
+input[type="text"]::placeholder{color:var(--muted)}
+
+.btn{
+  background:var(--metal);color:#1a1200;
+  border:none;border-radius:10px;padding:13px 18px;
+  font-family:'Bebas Neue',sans-serif;font-weight:400;font-size:17px;letter-spacing:1.5px;
+  cursor:pointer;transition:filter .15s,transform .1s;white-space:nowrap;
+  touch-action:manipulation;
+  box-shadow:0 2px 8px rgba(232,168,0,0.3),inset 0 1px 0 rgba(255,255,255,0.3);
+}
+.btn:active{transform:scale(.96);filter:brightness(.9)}
+.btn.secondary{background:var(--card-bg);color:var(--text);border:1.5px solid var(--border);box-shadow:none;font-size:15px}
+.btn.danger{background:var(--metal-red);color:#fff;box-shadow:0 2px 8px rgba(212,43,43,0.35),inset 0 1px 0 rgba(255,255,255,0.25)}
+.btn.success{background:var(--metal-green);color:#fff;box-shadow:0 2px 8px rgba(42,157,78,0.35),inset 0 1px 0 rgba(255,255,255,0.25)}
+.btn.full{width:100%;margin-top:10px;padding:15px}
+
+.player-list{margin-bottom:18px;min-height:10px}
+.player-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(232,168,0,0.1);border:1px solid rgba(232,168,0,0.25);
+  border-radius:99px;padding:7px 10px 7px 14px;margin:4px;font-size:13px;color:var(--cream);
+  font-weight:600;
+}
+.player-chip button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:0;touch-action:manipulation}
+
+/* ══ ENTRY - PLAYER CARD ══ */
+.player-cards{display:flex;flex-direction:column;gap:16px;margin-bottom:20px}
+
+.player-card{
+  background:var(--card-bg);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 14px;
+  transition:border-color .25s,box-shadow .25s;
+  position:relative;overflow:hidden;
+}
+.player-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--metal2);opacity:.6;
+}
+.player-card.busted{
+  border-color:rgba(212,43,43,.5);
+  box-shadow:inset 0 0 30px rgba(212,43,43,.06);
+  opacity:.6;
+}
+.player-card.flip7done{
+  border-color:rgba(42,157,78,.5);
+  box-shadow:0 0 20px rgba(42,157,78,.15),inset 0 0 20px rgba(42,157,78,.05);
+}
+.player-card.flip7done::before{background:var(--metal-green);opacity:.7}
+
+.player-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.player-name-label{
+  font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px;
+  color:var(--cream);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.bust-toggle{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;font-weight:600;touch-action:manipulation}
+.bust-toggle input{accent-color:var(--red);width:16px;height:16px;cursor:pointer}
+
+/* ══ SECTION LABELS ══ */
+.section-label{
+  font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;
+  margin-bottom:8px;margin-top:14px;display:flex;align-items:center;gap:6px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:currentColor;opacity:.15}
+.section-label.num{color:var(--cream2)}
+.section-label.bonus{color:var(--gold)}
+.section-label.special{color:#8fa8ff}
+
+/* ══ NUMBER CARDS — Flip 7 card style ══ */
+.cards-grid{display:flex;flex-wrap:wrap;gap:6px}
+
+.card-btn{
+  width:clamp(38px,calc((100vw - 90px)/14),50px);
+  height:clamp(46px,calc((100vw - 90px)/14 * 1.25),62px);
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  transition:transform .12s,filter .12s;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  touch-action:manipulation;
+  position:relative;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(16px,3.5vw,22px);
+  letter-spacing:0;
+  /* Default: card back style */
+  background:linear-gradient(160deg,#2a2848 0%,#1e1c38 100%);
+  color:var(--muted);
+  box-shadow:0 2px 6px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.06);
+  /* Border like a real card */
+  outline:1.5px solid rgba(255,255,255,0.07);
+}
+.card-btn:active{transform:scale(.88)}
+
+/* Each number gets its own color from the game */
+.card-btn[data-v="0"]{background:linear-gradient(160deg,#3a3060,#1e1c48);color:#9988cc}
+.card-btn[data-v="1"]{background:linear-gradient(160deg,#5a1a1a,#3a0808);color:#ff9977}
+.card-btn[data-v="2"]{background:linear-gradient(160deg,#0d2e6e,#071a44);color:#77aaff}
+.card-btn[data-v="3"]{background:linear-gradient(160deg,#1a4a1a,#0a2a0a);color:#77cc77}
+.card-btn[data-v="4"]{background:linear-gradient(160deg,#5a3a00,#3a2000);color:#ffcc55}
+.card-btn[data-v="5"]{background:linear-gradient(160deg,#5a1a3a,#3a0a22);color:#ff88bb}
+.card-btn[data-v="6"]{background:linear-gradient(160deg,#1a3a5a,#0a2040);color:#55aadd}
+.card-btn[data-v="7"]{background:linear-gradient(160deg,#4a1a00,#2a0c00);color:#ff8833}
+.card-btn[data-v="8"]{background:linear-gradient(160deg,#2a1a5a,#180a3a);color:#bb88ff}
+.card-btn[data-v="9"]{background:linear-gradient(160deg,#004a2a,#002a18);color:#44ddaa}
+.card-btn[data-v="10"]{background:linear-gradient(160deg,#4a3800,#2a2000);color:#ffd044}
+.card-btn[data-v="11"]{background:linear-gradient(160deg,#5a0a1a,#380008);color:#ff5577}
+.card-btn[data-v="12"]{background:linear-gradient(160deg,#00304a,#001c2e);color:#33bbee}
+
+/* Selected state: metallic front face */
+.card-btn.selected{
+  background:var(--metal);
+  color:#1a0e00;
+  outline:none;
+  box-shadow:0 0 14px rgba(232,168,0,0.5),0 2px 8px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.5);
+  filter:none;
+  transform:translateY(-2px);
+}
+.card-btn[data-v="1"].selected{background:var(--metal-red);color:#fff}
+.card-btn[data-v="2"].selected{background:var(--metal-blue);color:#fff}
+.card-btn[data-v="3"].selected{background:var(--metal-green);color:#fff}
+.card-btn[data-v="5"].selected{background:linear-gradient(135deg,#880055,#dd2288,#ff88cc,#dd2288,#770044);color:#fff}
+.card-btn[data-v="6"].selected{background:var(--metal-blue);color:#fff}
+.card-btn[data-v="8"].selected{background:linear-gradient(135deg,#4a1a7a,#8833cc,#cc88ff,#8833cc,#3a1060);color:#fff}
+.card-btn[data-v="9"].selected{background:var(--metal-green);color:#fff}
+
+/* Doublon / bust */
+.card-btn.bust-card{
+  background:linear-gradient(160deg,#5a0a0a,#3a0000) !important;
+  color:var(--red) !important;
+  outline:1.5px solid rgba(212,43,43,.5);
+  box-shadow:0 0 10px rgba(212,43,43,.4),inset 0 0 10px rgba(212,43,43,.1);
+  animation:shake .3s ease;
+}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+.card-count{
+  font-size:9px;font-family:'Inter',sans-serif;font-weight:700;
+  position:absolute;bottom:3px;right:4px;opacity:.9;
+}
+
+/* ══ BONUS CARDS ══ */
+.bonus-btn{
+  height:42px;padding:0 12px;
+  border-radius:8px;border:none;
+  cursor:pointer;transition:transform .12s,filter .12s;
+  font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  white-space:nowrap;touch-action:manipulation;position:relative;
+  /* Default */
+  background:linear-gradient(160deg,#3a2a00,#251900);
+  color:var(--gold);
+  box-shadow:0 2px 6px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,200,0,0.1);
+  outline:1.5px solid rgba(232,168,0,0.2);
+}
+.bonus-btn:active{transform:scale(.9)}
+.bonus-btn.selected{
+  background:var(--metal-orange);color:#fff;
+  outline:none;
+  box-shadow:0 0 14px rgba(244,97,10,0.5),inset 0 1px 0 rgba(255,255,255,0.3);
+  transform:translateY(-2px);
+}
+.bonus-btn .card-count{font-size:9px;font-weight:700;position:absolute;bottom:3px;right:4px;opacity:.9}
+
+/* ══ SPECIAL CARDS ══ */
+.special-btn{
+  height:42px;padding:0 10px;
+  border-radius:8px;border:none;
+  cursor:pointer;transition:transform .12s;
+  font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:.8px;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  white-space:nowrap;touch-action:manipulation;position:relative;
+}
+.special-btn:active{transform:scale(.9)}
+
+/* Stop = bleu */
+.special-btn[data-sid="stop"]{
+  background:linear-gradient(160deg,#0a1a4a,#06112e);color:#7799ff;
+  outline:1.5px solid rgba(34,85,170,0.35);
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+.special-btn[data-sid="stop"].selected{background:var(--metal-blue);color:#fff;outline:none;box-shadow:0 0 14px rgba(34,85,170,.5);transform:translateY(-2px)}
+
+/* Seconde Chance = rouge */
+.special-btn[data-sid="chance"]{
+  background:linear-gradient(160deg,#3a0a0a,#250606);color:#ff7777;
+  outline:1.5px solid rgba(212,43,43,0.35);
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+.special-btn[data-sid="chance"].selected{background:var(--metal-red);color:#fff;outline:none;box-shadow:0 0 14px rgba(212,43,43,.5);transform:translateY(-2px)}
+
+/* Trois à la suite = jaune */
+.special-btn[data-sid="suite"]{
+  background:linear-gradient(160deg,#3a2a00,#252000);color:var(--gold2);
+  outline:1.5px solid rgba(232,168,0,0.35);
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+.special-btn[data-sid="suite"].selected{background:var(--metal);color:#1a0e00;outline:none;box-shadow:0 0 14px rgba(232,168,0,.5);transform:translateY(-2px)}
+
+.special-btn .card-count{font-size:9px;font-weight:700;position:absolute;bottom:3px;right:4px;opacity:.9}
+
+/* ══ COUNTER BAR ══ */
+.card-counter-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:12px;padding:8px 12px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px;font-size:12px;color:var(--muted);gap:8px;flex-wrap:wrap;
+}
+.ccount-wrap{display:flex;align-items:center;gap:6px}
+.ccount-pips{display:flex;gap:3px}
+.pip{width:10px;height:10px;border-radius:3px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);transition:background .2s}
+.pip.filled{background:var(--gold);border-color:var(--gold);box-shadow:0 0 6px rgba(232,168,0,.4)}
+.pip.filled.last{background:var(--metal);box-shadow:0 0 10px rgba(232,168,0,.7);animation:pulse .6s ease infinite alternate}
+@keyframes pulse{from{box-shadow:0 0 6px rgba(232,168,0,.5)}to{box-shadow:0 0 14px rgba(232,168,0,.9)}}
+
+.status-msg{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;display:none;align-items:center;gap:4px}
+.status-msg.flip7{color:#44dd88;display:none}
+.status-msg.bust{color:var(--red);display:none}
+.status-msg.show{display:flex}
+
+.live-score{font-size:12px;color:var(--muted);margin-top:10px;text-align:right;letter-spacing:.3px}
+.live-score strong{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;
+  background:var(--metal);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* ══ SCOREBOARD ══ */
+.actions-row{display:flex;gap:8px}
+.actions-row .btn{flex:1}
+
+.scoreboard{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+
+.score-row{
+  background:var(--card-bg);border:1.5px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;
+  display:flex;align-items:center;gap:10px;
+  position:relative;overflow:hidden;
+}
+.score-row::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--metal2);opacity:.3}
+.score-row.leader{border-color:rgba(232,168,0,.45);box-shadow:0 0 20px rgba(232,168,0,.1)}
+.score-row.leader::before{opacity:.8}
+
+.score-row .rank{
+  font-family:'Bebas Neue',sans-serif;font-size:24px;width:32px;
+  text-align:center;color:var(--muted);flex-shrink:0;
+}
+.score-row.leader .rank{background:var(--metal);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.score-row .sname{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--cream);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.score-row .round-pts{font-size:11px;color:var(--muted);text-align:right;white-space:nowrap}
+.score-row .total{
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;
+  min-width:54px;text-align:right;flex-shrink:0;
+  background:var(--metal);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:3px}
+.tag{font-size:10px;border-radius:4px;padding:2px 7px;font-weight:700;font-family:'Bebas Neue',sans-serif;letter-spacing:.5px}
+.tag.flip{background:rgba(42,157,78,.2);color:#55dd88;border:1px solid rgba(42,157,78,.3)}
+.tag.bust{background:rgba(212,43,43,.2);color:#ff7777;border:1px solid rgba(212,43,43,.3)}
+.tag.bonus{background:rgba(244,97,10,.2);color:#ff9955;border:1px solid rgba(244,97,10,.3)}
+.tag.special{background:rgba(34,85,170,.2);color:#88aaff;border:1px solid rgba(34,85,170,.3)}
+
+/* ══ WINNER ══ */
+.winner-banner{
+  background:linear-gradient(135deg,rgba(232,168,0,.15),rgba(247,201,72,.05));
+  border:1.5px solid rgba(232,168,0,.4);
+  border-radius:var(--radius);padding:22px;text-align:center;margin-bottom:20px;
+  position:relative;overflow:hidden;
+}
+.winner-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--metal)}
+.winner-banner .crown{font-size:36px;margin-bottom:8px;display:block}
+.winner-banner h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;
+  background:var(--metal);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:4px}
+.winner-banner p{color:var(--muted);font-size:13px}
+
+/* ══ HISTORY ══ */
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.history-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:24px}
+.history-table{width:100%;border-collapse:collapse;font-size:12px;min-width:180px}
+.history-table th{
+  font-family:'Bebas Neue',sans-serif;letter-spacing:1px;font-size:12px;font-weight:400;
+  color:var(--muted);padding:5px 8px;border-bottom:1px solid var(--border);white-space:nowrap;text-align:left;
+}
+.history-table td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:var(--muted);font-size:12px}
+.history-table td:first-child{text-align:left;color:rgba(255,255,255,.3);font-size:11px}
+.history-table td.pts{color:var(--cream);font-weight:600}
+.history-table td.winner-cell{
+  font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:.5px;
+  background:var(--metal);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+/* ══ STATS ══ */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px}
+.stat-card{
+  background:var(--card-bg);border:1.5px solid var(--border);
+  border-radius:12px;padding:12px 14px;position:relative;overflow:hidden;
+}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:var(--metal2);opacity:.3}
+.stat-card.hl-green::before{background:var(--metal-green);opacity:.6}
+.stat-card.hl-red::before{background:var(--metal-red);opacity:.6}
+.stat-card.hl-blue::before{background:var(--metal-blue);opacity:.6}
+.stat-label{font-size:10px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.stat-value{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;
+  background:var(--metal);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.stat-card.hl-green .stat-value{background:var(--metal-green);-webkit-background-clip:text;background-clip:text}
+.stat-card.hl-red .stat-value{background:var(--metal-red);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card.hl-blue .stat-value{background:var(--metal-blue);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500}
+
+/* ══ TOAST ══ */
+#toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;
+  padding:10px 20px;border-radius:99px;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  z-index:100;white-space:nowrap;max-width:90vw;text-align:center;
+  background:var(--metal);color:#1a0e00;
+  box-shadow:0 4px 20px rgba(232,168,0,.4);
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.warn{background:var(--metal-red);color:#fff;box-shadow:0 4px 20px rgba(212,43,43,.4)}
+
+@media(max-width:400px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .bonus-btn,.special-btn{font-size:12px;padding:0 8px;height:38px}
+}
 </style>
 </head>
 <body>
+
 <header>
-  <div class="logo">FLIP <span>7</span></div>
-  <div class="round-badge" id="roundBadge" style="display:none">Manche <strong id="roundNum">1</strong></div>
+  <div>
+    <div class="logo">FLIP 7</div>
+    <div class="logo-sub">Compteur de score</div>
+  </div>
+  <div class="round-badge" id="roundBadge" style="display:none">MANCHE <strong id="roundNum">1</strong></div>
 </header>
 
-<!-- SCREEN 1: Setup -->
+<!-- ══ SETUP ══ -->
 <div class="screen active" id="screenSetup">
-  <h2>Nouvelle partie</h2>
-  <p class="subtitle">Ajoute les joueurs, puis lance la partie.</p>
+  <h2>Nouvelle Partie</h2>
+  <div class="divider"><span>Joueurs</span></div>
   <div class="player-input-row">
-    <input type="text" id="playerNameInput" placeholder="Nom du joueur…" maxlength="20">
-    <button class="btn" onclick="addPlayer()">+ Ajouter</button>
+    <input type="text" id="playerNameInput" placeholder="Nom du joueur…" maxlength="16" autocomplete="off">
+    <button class="btn" onclick="addPlayer()">+ AJOUTER</button>
   </div>
   <div class="player-list" id="playerList"></div>
-  <button class="btn full" onclick="startGame()" id="startBtn" disabled>Démarrer la partie →</button>
+  <button class="btn full" onclick="startGame()" id="startBtn" disabled>DÉMARRER →</button>
 </div>
 
-<!-- SCREEN 2: Score Entry -->
+<!-- ══ ENTRY ══ -->
 <div class="screen" id="screenEntry">
-  <h2 id="entryTitle">Fin de manche 1</h2>
-  <p class="subtitle">Sélectionne les cartes de chaque joueur. Coche "Crevé" si dépassé.</p>
+  <h2 id="entryTitle">Fin de Manche 1</h2>
+  <p class="subtitle">Clique sur tes cartes. Double = crevé automatique · 7 cartes = Flip 7 +15 automatique</p>
   <div class="player-cards" id="playerCards"></div>
-  <button class="btn full success" onclick="validateRound()">Valider la manche →</button>
+  <button class="btn full success" onclick="validateRound()">VALIDER LA MANCHE →</button>
 </div>
 
-<!-- SCREEN 3: Scoreboard -->
+<!-- ══ SCOREBOARD ══ -->
 <div class="screen" id="screenBoard">
   <div id="winnerBanner" style="display:none"></div>
   <h2>Classement</h2>
   <p class="subtitle" id="boardSubtitle"></p>
   <div class="scoreboard" id="scoreboard"></div>
-  <div id="historySection" style="margin-bottom:24px; display:none">
-    <div class="history-title">Historique des manches</div>
-    <table class="history-table" id="historyTable"></table>
+
+  <div id="historySection" style="display:none;margin-bottom:8px">
+    <div class="section-title">Historique</div>
+    <div class="history-wrap"><table class="history-table" id="historyTable"></table></div>
   </div>
+
+  <div id="statsSection" style="display:none">
+    <div class="section-title">Statistiques</div>
+    <div class="stats-grid" id="statsGrid"></div>
+  </div>
+
   <div class="actions-row">
-    <button class="btn secondary" id="nextRoundBtn" onclick="goEntry()">Manche suivante →</button>
-    <button class="btn danger" onclick="resetGame()">Nouvelle partie</button>
+    <button class="btn secondary" id="nextRoundBtn" onclick="goEntry()">MANCHE SUIVANTE →</button>
+    <button class="btn danger" onclick="resetGame()">NOUVELLE PARTIE</button>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ── CARD DEFINITIONS ──────────────────────────────────────────────
-const NUM_CARDS = [0,1,2,3,4,5,6,7,8,9,10,11,12];
-
-// Bonus cards: id, label, effect type, value
-const BONUS_CARDS = [
-  { id:'x2',  label:'×2',  type:'multiply', val:2 },
-  { id:'p2',  label:'+2',  type:'add',      val:2 },
-  { id:'p4',  label:'+4',  type:'add',      val:4 },
-  { id:'p6',  label:'+6',  type:'add',      val:6 },
-  { id:'p8',  label:'+8',  type:'add',      val:8 },
-  { id:'p10', label:'+10', type:'add',      val:10 },
+const NUM_CARDS=[0,1,2,3,4,5,6,7,8,9,10,11,12];
+const BONUS_CARDS=[
+  {id:'x2',label:'× 2',type:'multiply',val:2},
+  {id:'p2',label:'+ 2',type:'add',val:2},
+  {id:'p4',label:'+ 4',type:'add',val:4},
+  {id:'p6',label:'+ 6',type:'add',val:6},
+  {id:'p8',label:'+ 8',type:'add',val:8},
+  {id:'p10',label:'+ 10',type:'add',val:10},
 ];
-
-// Special cards: id, label (informational only — no point effect)
-const SPECIAL_CARDS = [
-  { id:'stop',   label:'🔒 Stop' },
-  { id:'chance', label:'♥ Seconde Chance' },
-  { id:'suite',  label:'⚡ Trois à la suite' },
+const SPECIAL_CARDS=[
+  {id:'stop',label:'🔒 STOP'},
+  {id:'chance',label:'♥ 2NDE CHANCE'},
+  {id:'suite',label:'⚡ 3 À LA SUITE'},
 ];
+const FLIP7_BONUS=15, WIN_SCORE=200;
+let players=[], round=1, selections={};
 
-const FLIP7_BONUS = 15;
-const WIN_SCORE   = 200;
-
-// ── STATE ─────────────────────────────────────────────────────────
-let players = [];
-let round   = 1;
-let selections = {}; // per-player per-round: { nums:{val:count}, bonus:{id:count}, special:{id:count}, flip7, bust }
-
-// ── SETUP ─────────────────────────────────────────────────────────
-document.getElementById('playerNameInput').addEventListener('keydown', e => { if(e.key==='Enter') addPlayer(); });
-
-function addPlayer() {
-  const input = document.getElementById('playerNameInput');
-  const name  = input.value.trim();
-  if (!name || players.find(p => p.name.toLowerCase()===name.toLowerCase())) { shakeInput(input); return; }
-  players.push({ name, total:0, history:[] });
-  input.value = ''; input.focus();
-  renderSetup();
+document.getElementById('playerNameInput').addEventListener('keydown',e=>{if(e.key==='Enter')addPlayer()});
+function addPlayer(){
+  const input=document.getElementById('playerNameInput');
+  const name=input.value.trim();
+  if(!name||players.find(p=>p.name.toLowerCase()===name.toLowerCase())){shakeInput(input);return}
+  players.push({name,total:0,history:[],wins:0,streak:0,currentStreak:0,bestScore:0});
+  input.value='';input.focus();renderSetup();
 }
-
-function removePlayer(i) { players.splice(i,1); renderSetup(); }
-
-function renderSetup() {
-  document.getElementById('playerList').innerHTML = players.map((p,i) =>
-    `<span class="player-chip">${p.name} <button onclick="removePlayer(${i})">×</button></span>`
+function removePlayer(i){players.splice(i,1);renderSetup()}
+function renderSetup(){
+  document.getElementById('playerList').innerHTML=players.map((p,i)=>
+    `<span class="player-chip">${p.name}<button onclick="removePlayer(${i})">×</button></span>`
   ).join('');
-  document.getElementById('startBtn').disabled = players.length < 2;
+  document.getElementById('startBtn').disabled=players.length<2;
 }
-
-function startGame() {
-  round = 1;
-  players.forEach(p => { p.total=0; p.history=[]; });
-  document.getElementById('roundBadge').style.display = '';
+function startGame(){
+  round=1;
+  players.forEach(p=>{p.total=0;p.history=[];p.wins=0;p.streak=0;p.currentStreak=0;p.bestScore=0});
+  document.getElementById('roundBadge').style.display='';
   goEntry();
 }
 
-// ── ENTRY ─────────────────────────────────────────────────────────
-function goEntry() {
+// ── ENTRY ──
+function goEntry(){
   updateRoundBadge();
-  document.getElementById('entryTitle').textContent = `Fin de manche ${round}`;
-  initSelections();
-  renderPlayerCards();
-  show('screenEntry');
+  document.getElementById('entryTitle').textContent=`Fin de Manche ${round}`;
+  initSelections();renderPlayerCards();
+  show('screenEntry');window.scrollTo(0,0);
+}
+function initSelections(){
+  selections={};
+  players.forEach(p=>{selections[p.name]={nums:{},bonus:{},special:{},flip7:false,bust:false}});
+}
+function sid(n){return n.replace(/[^a-zA-Z0-9]/g,'_')}
+
+function renderPlayerCards(){
+  document.getElementById('playerCards').innerHTML=players.map(p=>buildCard(p)).join('');
+  players.forEach(p=>{refreshUI(p.name)});
 }
 
-function initSelections() {
-  selections = {};
-  players.forEach(p => {
-    selections[p.name] = { nums:{}, bonus:{}, special:{}, flip7:false, bust:false };
-  });
-}
-
-function safeId(name) { return name.replace(/[^a-zA-Z0-9]/g, '_'); }
-
-function renderPlayerCards() {
-  document.getElementById('playerCards').innerHTML = players.map(p => buildPlayerCard(p)).join('');
-  players.forEach(p => updateLiveScore(p.name));
-}
-
-function buildPlayerCard(p) {
-  const sid = safeId(p.name);
-
-  const numBtns = NUM_CARDS.map(v =>
-    `<button class="card-btn" id="cb-${sid}-${v}" onclick="toggleNum('${p.name}',${v})">${v}<span class="card-count" id="cc-${sid}-${v}"></span></button>`
+function buildCard(p){
+  const s=sid(p.name);
+  const nums=NUM_CARDS.map(v=>
+    `<button class="card-btn" data-v="${v}" id="cb-${s}-${v}" onclick="tapNum('${p.name}',${v})">${v}<span class="card-count" id="cc-${s}-${v}"></span></button>`
   ).join('');
-
-  const bonusBtns = BONUS_CARDS.map(b =>
-    `<button class="bonus-btn" id="bb-${sid}-${b.id}" onclick="toggleBonus('${p.name}','${b.id}')">${b.label}<span class="card-count" id="bc-${sid}-${b.id}"></span></button>`
+  const bonuses=BONUS_CARDS.map(b=>
+    `<button class="bonus-btn" id="bb-${s}-${b.id}" onclick="tapBonus('${p.name}','${b.id}')">${b.label}<span class="card-count" id="bc-${s}-${b.id}"></span></button>`
   ).join('');
-
-  const specialBtns = SPECIAL_CARDS.map(s =>
-    `<button class="special-btn" id="sb-${sid}-${s.id}" onclick="toggleSpecial('${p.name}','${s.id}')">${s.label}<span class="card-count" id="sc-${sid}-${s.id}"></span></button>`
+  const specials=SPECIAL_CARDS.map(sp=>
+    `<button class="special-btn" data-sid="${sp.id}" id="sb-${s}-${sp.id}" onclick="tapSpecial('${p.name}','${sp.id}')">${sp.label}<span class="card-count" id="sc-${s}-${sp.id}"></span></button>`
   ).join('');
-
+  const pips=Array.from({length:7},(_,i)=>`<div class="pip" id="pip-${s}-${i}"></div>`).join('');
   return `
-  <div class="player-card" id="pc-${sid}">
+  <div class="player-card" id="pc-${s}">
     <div class="player-card-header">
       <span class="player-name-label">${p.name}</span>
-      <label class="bust-toggle">
-        <input type="checkbox" onchange="toggleBust('${p.name}',this.checked)"> Crevé 💥
-      </label>
+      <label class="bust-toggle"><input type="checkbox" id="bustcb-${s}" onchange="forceBust('${p.name}',this.checked)"> CREVÉ 💥</label>
     </div>
-
-    <div class="section-label num">Cartes numéro</div>
-    <div class="cards-grid">${numBtns}</div>
-
-    <div class="section-label bonus">Cartes bonus</div>
-    <div class="cards-grid">${bonusBtns}</div>
-
-    <div class="section-label special">Cartes spéciales</div>
-    <div class="cards-grid">${specialBtns}</div>
-
-    <label class="flip7-toggle">
-      <input type="checkbox" id="f7cb-${sid}" onchange="toggleFlip7('${p.name}',this.checked)">
-      <label for="f7cb-${sid}">Flip 7 réussi ! 🃏</label>
-      <span>+${FLIP7_BONUS} pts bonus</span>
-    </label>
-    <div class="live-score" id="ls-${sid}">Score ce tour : <strong>0</strong></div>
+    <div class="section-label num">Cartes Numéro</div>
+    <div class="cards-grid">${nums}</div>
+    <div class="section-label bonus">Cartes Bonus</div>
+    <div class="cards-grid">${bonuses}</div>
+    <div class="section-label special">Cartes Spéciales</div>
+    <div class="cards-grid">${specials}</div>
+    <div class="card-counter-bar">
+      <div class="ccount-wrap">
+        <div class="ccount-pips">${pips}</div>
+        <span id="ccount-${s}" style="font-size:11px;color:var(--muted);margin-left:4px">0/7</span>
+      </div>
+      <span class="status-msg flip7" id="f7msg-${s}">🃏 FLIP 7 ! +15</span>
+      <span class="status-msg bust" id="bmsg-${s}">💥 DOUBLON !</span>
+    </div>
+    <div class="live-score" id="ls-${s}">Score ce tour : <strong>0</strong></div>
   </div>`;
 }
 
-// Cycle 0→1→2→3→0 on each click
-function cycleCount(obj, key) {
-  obj[key] = ((obj[key]||0) + 1) % 4;
+function tapNum(name,val){
+  const sel=selections[name];
+  if(sel.bust)return;
+  sel.nums[val]=(sel.nums[val]||0)+1;
+  if(sel.nums[val]>=2){
+    sel.bust=true;
+    showToast(`💥 ${name} — doublon !`,true);
+    applyBustUI(name);refreshUI(name);return;
+  }
+  const cnt=Object.values(sel.nums).reduce((a,c)=>a+c,0);
+  if(cnt===7)sel.flip7=true;
+  refreshUI(name);
 }
 
-function toggleNum(name, val) {
-  if (selections[name].bust) return;
-  cycleCount(selections[name].nums, val);
-  const sid = safeId(name);
-  const count = selections[name].nums[val]||0;
-  const btn = document.getElementById(`cb-${sid}-${val}`);
-  btn.classList.toggle('selected', count>0);
-  document.getElementById(`cc-${sid}-${val}`).textContent = count>1 ? `×${count}` : '';
-  updateLiveScore(name);
+function tapBonus(name,id){
+  const sel=selections[name];if(sel.bust)return;
+  sel.bonus[id]=((sel.bonus[id]||0)+1)%4;
+  const s=sid(name),c=sel.bonus[id];
+  const btn=document.getElementById(`bb-${s}-${id}`);
+  btn.classList.toggle('selected',c>0);
+  document.getElementById(`bc-${s}-${id}`).textContent=c>1?`×${c}`:'';
+  refreshScore(name);
 }
 
-function toggleBonus(name, id) {
-  if (selections[name].bust) return;
-  cycleCount(selections[name].bonus, id);
-  const sid = safeId(name);
-  const count = selections[name].bonus[id]||0;
-  const btn = document.getElementById(`bb-${sid}-${id}`);
-  btn.classList.toggle('selected', count>0);
-  document.getElementById(`bc-${sid}-${id}`).textContent = count>1 ? `×${count}` : '';
-  updateLiveScore(name);
+function tapSpecial(name,id){
+  const sel=selections[name];if(sel.bust)return;
+  sel.special[id]=((sel.special[id]||0)+1)%4;
+  const s=sid(name),c=sel.special[id];
+  const btn=document.getElementById(`sb-${s}-${id}`);
+  btn.classList.toggle('selected',c>0);
+  document.getElementById(`sc-${s}-${id}`).textContent=c>1?`×${c}`:'';
 }
 
-function toggleSpecial(name, id) {
-  if (selections[name].bust) return;
-  cycleCount(selections[name].special, id);
-  const sid = safeId(name);
-  const count = selections[name].special[id]||0;
-  const btn = document.getElementById(`sb-${sid}-${id}`);
-  btn.classList.toggle('selected', count>0);
-  document.getElementById(`sc-${sid}-${id}`).textContent = count>1 ? `×${count}` : '';
-  // specials have no point value, just visual tracking
-  updateLiveScore(name);
+function forceBust(name,busted){
+  const sel=selections[name],s=sid(name);
+  if(busted){sel.bust=true;sel.flip7=false;applyBustUI(name);}
+  else{
+    sel.bust=false;sel.nums={};sel.bonus={};sel.special={};sel.flip7=false;
+    document.getElementById(`bustcb-${s}`).checked=false;
+    document.getElementById(`pc-${s}`).classList.remove('busted','flip7done');
+    document.querySelectorAll(`[id^="cb-${s}-"],[id^="bb-${s}-"],[id^="sb-${s}-"]`).forEach(b=>{b.classList.remove('selected','bust-card');b.disabled=false});
+    NUM_CARDS.forEach(v=>{document.getElementById(`cc-${s}-${v}`).textContent=''});
+    BONUS_CARDS.forEach(b=>{document.getElementById(`bc-${s}-${b.id}`).textContent=''});
+    SPECIAL_CARDS.forEach(sp=>{document.getElementById(`sc-${s}-${sp.id}`).textContent=''});
+    document.getElementById(`f7msg-${s}`).classList.remove('show');
+    document.getElementById(`bmsg-${s}`).classList.remove('show');
+    refreshUI(name);
+  }
 }
 
-function toggleBust(name, busted) {
-  const sel = selections[name];
-  sel.bust = busted; sel.flip7 = false;
-  const sid = safeId(name);
-  document.getElementById(`f7cb-${sid}`).checked = false;
-  document.getElementById(`pc-${sid}`).classList.toggle('busted', busted);
-  // disable all interactive buttons
-  ['cb','bb','sb'].forEach(prefix => {
-    document.querySelectorAll(`[id^="${prefix}-${sid}-"]`).forEach(b => b.disabled = busted);
+function applyBustUI(name){
+  const s=sid(name);
+  document.getElementById(`pc-${s}`).classList.add('busted');
+  document.getElementById(`pc-${s}`).classList.remove('flip7done');
+  document.getElementById(`bustcb-${s}`).checked=true;
+  document.getElementById(`f7msg-${s}`).classList.remove('show');
+  document.getElementById(`bmsg-${s}`).classList.add('show');
+  document.querySelectorAll(`[id^="cb-${s}-"],[id^="bb-${s}-"],[id^="sb-${s}-"]`).forEach(b=>b.disabled=true);
+  refreshScore(name);
+}
+
+function refreshUI(name){
+  const sel=selections[name],s=sid(name);
+  const cnt=Object.values(sel.nums).reduce((a,c)=>a+c,0);
+  // Update number cards
+  NUM_CARDS.forEach(v=>{
+    const c=sel.nums[v]||0,btn=document.getElementById(`cb-${s}-${v}`);
+    btn.classList.remove('selected','bust-card');
+    if(c>=2)btn.classList.add('bust-card');
+    else if(c===1)btn.classList.add('selected');
+    document.getElementById(`cc-${s}-${v}`).textContent=c>1?`×${c}`:'';
   });
-  updateLiveScore(name);
+  // Pips
+  for(let i=0;i<7;i++){
+    const pip=document.getElementById(`pip-${s}-${i}`);
+    if(!pip)continue;
+    pip.classList.remove('filled','last');
+    if(i<cnt){pip.classList.add('filled');if(i===cnt-1&&cnt===7)pip.classList.add('last')}
+  }
+  document.getElementById(`ccount-${s}`).textContent=`${cnt}/7`;
+  document.getElementById(`f7msg-${s}`).classList.toggle('show',sel.flip7&&!sel.bust);
+  document.getElementById(`bmsg-${s}`).classList.toggle('show',sel.bust);
+  document.getElementById(`pc-${s}`).classList.toggle('flip7done',sel.flip7&&!sel.bust);
+  document.getElementById(`pc-${s}`).classList.toggle('busted',sel.bust);
+  refreshScore(name);
 }
 
-function toggleFlip7(name, val) {
-  if (selections[name].bust) return;
-  selections[name].flip7 = val;
-  updateLiveScore(name);
+function refreshScore(name){
+  const pts=calcScore(selections[name]);
+  document.getElementById(`ls-${sid(name)}`).innerHTML=`Score ce tour : <strong>${pts}</strong>`;
 }
 
-// ── SCORE CALCULATION ─────────────────────────────────────────────
-// Rules:
-//   1. Sum all number cards (face value × count)
-//   2. Apply +N bonus cards
-//   3. Apply ×2 if present (once, at the end)
-//   4. Add +15 if Flip 7
-//   Special cards (Stop, Seconde Chance, Trois à la suite) are tracked but have no point value
-function calcRoundScore(sel) {
-  if (sel.bust) return 0;
-
-  // 1. Number cards
-  let base = Object.entries(sel.nums).reduce((acc,[v,c]) => acc + Number(v)*c, 0);
-
-  // 2. Add bonus: +2 +4 +6 +8 +10
-  BONUS_CARDS.filter(b => b.type==='add').forEach(b => {
-    const count = sel.bonus[b.id]||0;
-    base += b.val * count;
-  });
-
-  // 3. Multiply ×2 (applied once if card present, regardless of count)
-  if (sel.bonus['x2'] && sel.bonus['x2']>0) base *= 2;
-
-  // 4. Flip 7 bonus
-  if (sel.flip7) base += FLIP7_BONUS;
-
+function calcScore(sel){
+  if(sel.bust)return 0;
+  let base=Object.entries(sel.nums).reduce((a,[v,c])=>a+Number(v)*c,0);
+  BONUS_CARDS.filter(b=>b.type==='add').forEach(b=>{base+=b.val*(sel.bonus[b.id]||0)});
+  if((sel.bonus['x2']||0)>0)base*=2;
+  if(sel.flip7)base+=FLIP7_BONUS;
   return base;
 }
 
-function updateLiveScore(name) {
-  const pts = calcRoundScore(selections[name]);
-  const sid = safeId(name);
-  document.getElementById(`ls-${sid}`).innerHTML = `Score ce tour : <strong>${pts}</strong>`;
-}
-
-// ── VALIDATE ROUND ────────────────────────────────────────────────
-function validateRound() {
-  players.forEach(p => {
-    const sel = selections[p.name];
-    const pts = calcRoundScore(sel);
-    p.total += pts;
-    p.history.push({ nums:{...sel.nums}, bonus:{...sel.bonus}, special:{...sel.special}, flip7:sel.flip7, bust:sel.bust, pts });
+function validateRound(){
+  const scores=players.map(p=>({name:p.name,pts:calcScore(selections[p.name])}));
+  const max=Math.max(...scores.map(r=>r.pts));
+  const winners=scores.filter(r=>r.pts===max).map(r=>r.name);
+  players.forEach(p=>{
+    const sel=selections[p.name],pts=calcScore(sel);
+    p.total+=pts;
+    if(pts>p.bestScore)p.bestScore=pts;
+    if(winners.includes(p.name)){p.currentStreak++;p.wins++}
+    else p.currentStreak=0;
+    if(p.currentStreak>p.streak)p.streak=p.currentStreak;
+    p.history.push({nums:{...sel.nums},bonus:{...sel.bonus},special:{...sel.special},flip7:sel.flip7,bust:sel.bust,pts});
   });
-  round++;
-  showToast('✓ Manche enregistrée !');
-  renderScoreboard();
-  show('screenBoard');
+  round++;showToast('✓ MANCHE ENREGISTRÉE');renderScoreboard();show('screenBoard');window.scrollTo(0,0);
 }
 
-// ── SCOREBOARD ────────────────────────────────────────────────────
-function renderScoreboard() {
-  const sorted = [...players].sort((a,b) => b.total-a.total);
-  const currentRound = round-1;
-  document.getElementById('boardSubtitle').textContent = `Après ${currentRound} manche${currentRound>1?'s':''}`;
+function renderScoreboard(){
+  const sorted=[...players].sort((a,b)=>b.total-a.total);
+  const cr=round-1;
+  document.getElementById('boardSubtitle').textContent=`Après ${cr} manche${cr>1?'s':''}`;
   updateRoundBadge();
+  const winner=sorted[0].total>=WIN_SCORE?sorted[0]:null;
+  const banner=document.getElementById('winnerBanner');
+  if(winner){
+    banner.style.display='';
+    banner.innerHTML=`<div class="winner-banner"><span class="crown">🏆</span><h3>${winner.name} remporte la partie !</h3><p>${winner.total} points — Fin de partie</p></div>`;
+    document.getElementById('nextRoundBtn').style.display='none';
+  }else{banner.style.display='none';document.getElementById('nextRoundBtn').style.display='';}
 
-  const winner = sorted[0].total >= WIN_SCORE ? sorted[0] : null;
-  const banner = document.getElementById('winnerBanner');
-  if (winner) {
-    banner.style.display = '';
-    banner.innerHTML = `<div class="winner-banner"><div class="crown">🏆</div><h3>${winner.name} remporte la partie !</h3><p>${winner.total} points — Fin de partie</p></div>`;
-    document.getElementById('nextRoundBtn').style.display = 'none';
-  } else {
-    banner.style.display = 'none';
-    document.getElementById('nextRoundBtn').style.display = '';
-  }
-
-  document.getElementById('scoreboard').innerHTML = sorted.map((p,i) => {
-    const last = p.history[p.history.length-1];
-    const tags = [];
-    if (last?.flip7) tags.push('<span class="tag flip">Flip 7 🃏</span>');
-    if (last?.bust)  tags.push('<span class="tag bust">Crevé 💥</span>');
-    const hasBonus   = last && Object.values(last.bonus||{}).some(c=>c>0);
-    const hasSpecial = last && Object.values(last.special||{}).some(c=>c>0);
-    if (hasBonus)   tags.push('<span class="tag bonus">Bonus 🃏</span>');
-    if (hasSpecial) tags.push('<span class="tag special">Spéciale ⚡</span>');
-    return `
-    <div class="score-row ${i===0?'leader':''}">
+  document.getElementById('scoreboard').innerHTML=sorted.map((p,i)=>{
+    const last=p.history[p.history.length-1];
+    const tags=[];
+    if(last?.flip7)tags.push('<span class="tag flip">FLIP 7 🃏</span>');
+    if(last?.bust)tags.push('<span class="tag bust">CREVÉ 💥</span>');
+    if(last&&Object.values(last.bonus||{}).some(c=>c>0))tags.push('<span class="tag bonus">BONUS</span>');
+    if(last&&Object.values(last.special||{}).some(c=>c>0))tags.push('<span class="tag special">SPÉCIALE</span>');
+    return `<div class="score-row ${i===0?'leader':''}">
       <div class="rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
-      <div style="flex:1">
-        <div class="sname">${p.name}</div>
-        <div class="tags">${tags.join('')}</div>
-      </div>
-      <div>
-        <div class="round-pts">+${last?.pts??0} ce tour</div>
-        <div class="total">${p.total}</div>
-      </div>
+      <div style="flex:1;min-width:0"><div class="sname">${p.name}</div><div class="tags">${tags.join('')}</div></div>
+      <div style="text-align:right;flex-shrink:0"><div class="round-pts">+${last?.pts??0} ce tour</div><div class="total">${p.total}</div></div>
     </div>`;
   }).join('');
 
-  // History table
-  if (players[0].history.length>0) {
-    document.getElementById('historySection').style.display = '';
-    const headers = ['Manche',...players.map(p=>p.name)];
-    const headRow = `<tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr>`;
-    const rows = Array.from({length:currentRound},(_,ri) =>
-      `<tr><td>#${ri+1}</td>${players.map(p => {
-        const h = p.history[ri];
-        if(!h) return '<td>—</td>';
-        const icons = (h.flip7?' 🃏':'')+(h.bust?' 💥':'');
-        return `<td class="pts">${h.pts}${icons}</td>`;
-      }).join('')}</tr>`
-    ).join('');
-    document.getElementById('historyTable').innerHTML = headRow+rows;
+  if(players[0].history.length>0){
+    document.getElementById('historySection').style.display='';
+    const hdrs=['#',...players.map(p=>p.name)];
+    const headRow=`<tr>${hdrs.map(h=>`<th>${h}</th>`).join('')}</tr>`;
+    const rows=Array.from({length:cr},(_,ri)=>{
+      const rowPts=players.map(p=>(p.history[ri]?.pts??-1));
+      const maxR=Math.max(...rowPts);
+      return `<tr><td>#${ri+1}</td>${players.map(p=>{
+        const h=p.history[ri];if(!h)return '<td>—</td>';
+        const ic=(h.flip7?' 🃏':'')+(h.bust?' 💥':'');
+        return `<td class="${h.pts===maxR&&maxR>0?'winner-cell':'pts'}">${h.pts}${ic}</td>`;
+      }).join('')}</tr>`;
+    }).join('');
+    document.getElementById('historyTable').innerHTML=headRow+rows;
+  }
+
+  if(cr>=1){
+    document.getElementById('statsSection').style.display='';
+    let best={name:'—',score:0};
+    players.forEach(p=>p.history.forEach(h=>{if(h.pts>best.score)best={name:p.name,score:h.pts}}));
+    const sl=[...players].sort((a,b)=>(b.streak||0)-(a.streak||0))[0];
+    const fl=[...players].sort((a,b)=>b.history.filter(h=>h.flip7).length-a.history.filter(h=>h.flip7).length)[0];
+    const flc=fl.history.filter(h=>h.flip7).length;
+    const bl=[...players].sort((a,b)=>b.history.filter(h=>h.bust).length-a.history.filter(h=>h.bust).length)[0];
+    const blc=bl.history.filter(h=>h.bust).length;
+    document.getElementById('statsGrid').innerHTML=`
+      <div class="stat-card"><div class="stat-label">🏆 Meilleur score du tour</div><div class="stat-value">${best.score} pts</div><div class="stat-sub">${best.name}</div></div>
+      <div class="stat-card hl-green"><div class="stat-label">🔥 Plus longue série</div><div class="stat-value">${sl.streak||0} manches</div><div class="stat-sub">${sl.name}</div></div>
+      <div class="stat-card hl-blue"><div class="stat-label">🃏 Flip 7 réussis</div><div class="stat-value">${flc}×</div><div class="stat-sub">${flc>0?fl.name:'Aucun encore'}</div></div>
+      <div class="stat-card hl-red"><div class="stat-label">💥 Plus souvent crevé</div><div class="stat-value">${blc}×</div><div class="stat-sub">${blc>0?bl.name:'Personne !'}</div></div>`;
   }
 }
 
-// ── UTILS ─────────────────────────────────────────────────────────
-function show(id) { document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function updateRoundBadge() { document.getElementById('roundNum').textContent = round; }
-function shakeInput(el) { el.style.borderColor='var(--accent2)'; setTimeout(()=>el.style.borderColor='',800); el.focus(); }
-function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
-function resetGame() { if(!confirm('Recommencer une nouvelle partie ?')) return; players=[]; round=1; document.getElementById('roundBadge').style.display='none'; renderSetup(); show('screenSetup'); }
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function updateRoundBadge(){document.getElementById('roundNum').textContent=round}
+function shakeInput(el){el.style.borderColor='var(--red)';setTimeout(()=>el.style.borderColor='',700);el.focus()}
+let tt;
+function showToast(msg,warn=false){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='show'+(warn?' warn':'');
+  clearTimeout(tt);tt=setTimeout(()=>t.className='',2600);
+}
+function resetGame(){
+  if(!confirm('Recommencer une nouvelle partie ?'))return;
+  players=[];round=1;document.getElementById('roundBadge').style.display='none';
+  renderSetup();show('screenSetup');
+}
 </script>
 </body>
 </html>
