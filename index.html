@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Flip 7">
+<meta name="theme-color" content="#e8a800">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>Flip 7 — Score</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
@@ -778,6 +785,16 @@ function resetGame(){
   if(!confirm('Recommencer une nouvelle partie ?'))return;
   players=[];round=1;document.getElementById('roundBadge').style.display='none';
   renderSetup();show('screenSetup');
+}
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/flip7/sw.js')
+      .then(r => console.log('SW registered'))
+      .catch(e => console.log('SW error', e));
+  });
 }
 </script>
 </body>

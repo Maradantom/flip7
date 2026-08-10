@@ -1,0 +1,25 @@
+{
+  "name": "Flip 7 — Compteur de score",
+  "short_name": "Flip 7",
+  "description": "Compteur de points pour le jeu de cartes Flip 7",
+  "start_url": "/flip7/",
+  "scope": "/flip7/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#12111a",
+  "theme_color": "#e8a800",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
