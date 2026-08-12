@@ -24,18 +24,18 @@
   --bg2:      #192238;
   --surface:  #1e2a44;
   --border:   rgba(180,160,100,0.2);
-
+ 
   /* Dorure métallique */
   --gold:     #e8b840;
   --gold-l:   #f7e07a;
   --gold-d:   #b88820;
   --metal:    linear-gradient(135deg,#b88820 0%,#e8b840 30%,#f7e07a 50%,#e8b840 70%,#b88820 100%);
   --metal-sm: linear-gradient(135deg,#9a7010 0%,#d4a430 40%,#f0d060 50%,#d4a430 70%,#9a7010 100%);
-
+ 
   /* Texte */
   --text:  #f0e8d0;
   --muted: #8890a8;
-
+ 
   /* Couleurs exactes du jeu (outline des chiffres) */
   --c0:  #e8189a; --c0r:  232,24,154;
   --c1:  #cc1872; --c1r:  204,24,114;
@@ -50,14 +50,14 @@
   --c10: #cc1828; --c10r: 204,24,40;
   --c11: #1858c8; --c11r: 24,88,200;
   --c12: #7858b8; --c12r: 120,88,184;
-
+ 
   /* Spéciales */
   --bonus:  #f5a020;
   --stop:   #48b8d8;
   --chance: #e83820;
   --suite:  #f0d020;
 }
-
+ 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; }
 body {
@@ -71,7 +71,7 @@ body {
   display: flex; flex-direction: column; align-items: center;
   -webkit-tap-highlight-color: transparent;
 }
-
+ 
 /* ── HEADER ── */
 header {
   width: 100%; max-width: 700px;
@@ -94,11 +94,11 @@ header {
   color: var(--muted);
 }
 .round-pill strong { color: var(--text); }
-
+ 
 /* ── SCREENS ── */
 .screen { display: none; width: 100%; max-width: 700px; padding: 16px 14px 90px; }
 .screen.active { display: block; }
-
+ 
 /* ── PANEL ── */
 .panel {
   background: var(--surface);
@@ -114,7 +114,7 @@ header {
 }
 .ptitle { font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 2px; color: var(--text); margin-bottom: 3px; }
 .psub   { font-size: 12px; color: var(--muted); font-weight: 600; line-height: 1.5; margin-bottom: 14px; }
-
+ 
 /* ── INPUT ── */
 .irow { display: flex; gap: 8px; margin-bottom: 10px; }
 input[type="text"] {
@@ -126,7 +126,7 @@ input[type="text"] {
 }
 input[type="text"]:focus { border-color: var(--gold); }
 input[type="text"]::placeholder { color: var(--muted); }
-
+ 
 /* ── BUTTONS ── */
 .btn {
   background: var(--metal); color: #180e00;
@@ -143,7 +143,7 @@ input[type="text"]::placeholder { color: var(--muted); }
 .btn.full { width: 100%; margin-top: 10px; padding: 14px; }
 .arow { display: flex; gap: 8px; }
 .arow .btn { flex: 1; }
-
+ 
 /* ── CHIPS ── */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; min-height: 6px; }
 .chip {
@@ -153,7 +153,7 @@ input[type="text"]::placeholder { color: var(--muted); }
   font-size: 13px; font-weight: 700; color: var(--text);
 }
 .chip button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 17px; line-height: 1; padding: 0; }
-
+ 
 /* ── SECTION LABEL ── */
 .slabel {
   font-family: 'Bebas Neue', cursive; font-size: 11px; letter-spacing: 2.5px;
@@ -161,7 +161,7 @@ input[type="text"]::placeholder { color: var(--muted); }
   display: flex; align-items: center; gap: 6px;
 }
 .slabel::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.07); }
-
+ 
 /* ════════════════════════════════
    CARTES NUMÉRO
    Style fidèle au jeu :
@@ -172,7 +172,7 @@ input[type="text"]::placeholder { color: var(--muted); }
    • Sélectionné = vif + surbrillance + ombre colorée
 ════════════════════════════════ */
 .ngrid { display: flex; flex-wrap: wrap; gap: 6px; }
-
+ 
 .nc {
   width: clamp(37px, calc((100vw - 80px)/14), 49px);
   height: clamp(46px, calc((100vw - 80px)/14 * 1.3), 62px);
@@ -194,7 +194,7 @@ input[type="text"]::placeholder { color: var(--muted); }
   border-radius: 4px; pointer-events: none;
 }
 .nc:active { transform: scale(.86); }
-
+ 
 /* Chiffre — affiché en couleur même non sélectionné */
 .nc-n {
   font-family: 'Bebas Neue', cursive;
@@ -205,7 +205,7 @@ input[type="text"]::placeholder { color: var(--muted); }
   transition: color .15s, text-shadow .15s;
 }
 .nc-c { position: absolute; bottom: 2px; right: 3px; font-size: 8px; font-weight: 800; color: rgba(100,80,40,.5); }
-
+ 
 /* Couleurs individuelles non-sélectionnées */
 .nc[data-v="0"]  .nc-n { color: rgba(232,24,154,.65); }
 .nc[data-v="1"]  .nc-n { color: rgba(204,24,114,.65); }
@@ -220,11 +220,11 @@ input[type="text"]::placeholder { color: var(--muted); }
 .nc[data-v="10"] .nc-n { color: rgba(204,24,40,.70);  }
 .nc[data-v="11"] .nc-n { color: rgba(24,88,200,.75);  }
 .nc[data-v="12"] .nc-n { color: rgba(120,88,184,.70); }
-
+ 
 /* Sélectionné — fond crème + couleur vive + glow + bordure colorée */
 .nc.on { transform: translateY(-3px); }
 .nc.on .nc-n { font-size: clamp(16px, 4.2vw, 24px); }
-
+ 
 .nc[data-v="0"].on  { border-color: var(--c0);  box-shadow: 0 0 0 2px rgba(var(--c0r),.35), 0 4px 10px rgba(var(--c0r),.4);  }
 .nc[data-v="0"].on  .nc-n { color: var(--c0);  text-shadow: 0 0 8px rgba(var(--c0r),.5);  }
 .nc[data-v="1"].on  { border-color: var(--c1);  box-shadow: 0 0 0 2px rgba(var(--c1r),.35), 0 4px 10px rgba(var(--c1r),.4);  }
@@ -251,12 +251,12 @@ input[type="text"]::placeholder { color: var(--muted); }
 .nc[data-v="11"].on .nc-n { color: var(--c11); text-shadow: 0 0 8px rgba(var(--c11r),.5); }
 .nc[data-v="12"].on { border-color: var(--c12); box-shadow: 0 0 0 2px rgba(var(--c12r),.35),0 4px 10px rgba(var(--c12r),.4); }
 .nc[data-v="12"].on .nc-n { color: var(--c12); text-shadow: 0 0 8px rgba(var(--c12r),.5); }
-
+ 
 /* Doublon → rouge alarme */
 .nc.bust { background: #ffe8e0 !important; border-color: #cc1828 !important; animation: shake .28s ease; }
 .nc.bust .nc-n { color: #cc1828 !important; text-shadow: 0 0 6px rgba(204,24,40,.5) !important; }
 @keyframes shake { 0%,100%{transform:translateX(0)} 30%{transform:translateX(-5px)} 70%{transform:translateX(5px)} }
-
+ 
 /* ── BONUS CARDS ── */
 .bgrid { display: flex; flex-wrap: wrap; gap: 6px; }
 .bc {
@@ -275,7 +275,7 @@ input[type="text"]::placeholder { color: var(--muted); }
 .bc:active { transform: scale(.9); }
 .bc.on { filter: brightness(.8); transform: translateY(-1px); box-shadow: 0 0 10px rgba(245,160,32,.5); }
 .bc-c { position: absolute; bottom: 2px; right: 4px; font-size: 8px; font-weight: 800; }
-
+ 
 /* ── SPECIAL CARDS ── */
 .sgrid { display: flex; flex-wrap: wrap; gap: 6px; }
 .sc {
@@ -294,7 +294,7 @@ input[type="text"]::placeholder { color: var(--muted); }
 .sc[data-sid="chance"] { background: var(--chance);  border-color: #a01808; color: #fff; }
 .sc[data-sid="suite"]  { background: var(--suite);   border-color: #c0a000; color: #3a2800; }
 .sc-c { position: absolute; bottom: 2px; right: 4px; font-size: 8px; font-weight: 800; }
-
+ 
 /* ── PIPS ── */
 .cbar {
   display: flex; align-items: center; justify-content: space-between;
@@ -306,15 +306,15 @@ input[type="text"]::placeholder { color: var(--muted); }
 .pip.on   { background: rgba(232,184,64,.65); border-color: var(--gold); }
 .pip.flip { background: var(--metal); border-color: var(--gold-l); animation: gp .7s ease infinite alternate; }
 @keyframes gp { from{box-shadow:0 0 4px rgba(232,184,64,.4)} to{box-shadow:0 0 12px rgba(232,184,64,.9)} }
-
+ 
 .stag { font-family:'Bebas Neue',cursive; font-size:12px; letter-spacing:1px; border-radius:99px; padding:3px 10px; display:none; }
 .stag.f { background:rgba(240,120,32,.25); color:#ffaa66; border:1px solid rgba(240,120,32,.4); }
 .stag.b { background:rgba(204,24,40,.25); color:#ff8888; border:1px solid rgba(204,24,40,.4); }
 .stag.show { display:block; }
-
+ 
 .live { text-align:right; font-size:12px; color:var(--muted); margin-top:8px; font-weight:600; }
 .live strong { font-family:'Bebas Neue',cursive; font-size:22px; background:var(--metal); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-
+ 
 /* ── PLAYER CARD ── */
 .pcard {
   background: var(--surface); border: 1.5px solid var(--border);
@@ -328,12 +328,12 @@ input[type="text"]::placeholder { color: var(--muted); }
 .pcard.busted::before { background:linear-gradient(135deg,#880010,#cc1828,#ff5060,#cc1828,#880010); opacity:.8; }
 .pcard.flip7d  { border-color:rgba(240,120,32,.45); box-shadow:0 0 20px rgba(240,120,32,.1); }
 .pcard.flip7d::before { background:linear-gradient(135deg,#804000,#f07820,#ffc060,#f07820,#804000); opacity:.9; }
-
+ 
 .ph { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:8px; }
 .pn { font-family:'Bebas Neue',cursive; font-size:20px; letter-spacing:1.5px; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .blbl { display:flex; align-items:center; gap:5px; font-size:12px; font-weight:700; color:var(--muted); cursor:pointer; white-space:nowrap; }
 .blbl input { accent-color:var(--chance); width:15px; height:15px; cursor:pointer; }
-
+ 
 /* ── SCOREBOARD ── */
 .srow {
   background:var(--surface); border:1.5px solid var(--border); border-radius:12px;
@@ -356,7 +356,7 @@ input[type="text"]::placeholder { color: var(--muted); }
 .tag.tb { background:rgba(204,24,40,.2); color:#ff8888; border:1px solid rgba(204,24,40,.3); }
 .tag.tn { background:rgba(245,160,32,.2); color:#ffcc77; border:1px solid rgba(245,160,32,.3); }
 .tag.ts { background:rgba(72,184,216,.2); color:#88ddff; border:1px solid rgba(72,184,216,.3); }
-
+ 
 /* ── WINNER ── */
 .wbox {
   background:var(--surface); border:2px solid rgba(232,184,64,.45); border-radius:14px;
@@ -368,7 +368,7 @@ input[type="text"]::placeholder { color: var(--muted); }
 .wbox .cr { font-size:36px; display:block; margin-bottom:8px; }
 .wbox h3 { font-family:'Bebas Neue',cursive; font-size:26px; letter-spacing:2px; background:var(--metal); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:4px; }
 .wbox p { color:var(--muted); font-size:13px; font-weight:600; }
-
+ 
 /* ── HISTORY ── */
 .stit { font-family:'Bebas Neue',cursive; font-size:13px; letter-spacing:2px; color:var(--muted); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
 .stit::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--border),transparent); }
@@ -378,7 +378,7 @@ input[type="text"]::placeholder { color: var(--muted); }
 .ht td { padding:5px 8px; border-bottom:1px solid rgba(255,255,255,.04); text-align:center; color:var(--muted); font-weight:600; }
 .ht td:first-child { text-align:left; color:rgba(255,255,255,.25); font-size:11px; }
 .ht td.wc { font-family:'Bebas Neue',cursive; font-size:14px; background:var(--metal); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-
+ 
 /* ── STATS ── */
 .stgrid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 .stcard { background:rgba(255,255,255,.025); border:1.5px solid var(--border); border-radius:12px; padding:12px 13px; position:relative; overflow:hidden; }
@@ -393,7 +393,7 @@ input[type="text"]::placeholder { color: var(--muted); }
 .stcard.r .sv { background:linear-gradient(135deg,#880010,#cc1828,#ff7070,#cc1828,#880010); -webkit-background-clip:text; background-clip:text; }
 .stcard.b .sv { background:linear-gradient(135deg,#0a2880,#1858c8,#80c0ff,#1858c8,#0a2880); -webkit-background-clip:text; background-clip:text; }
 .stcard .ss { font-size:11px; color:var(--muted); font-weight:600; margin-top:2px; }
-
+ 
 /* ── TOAST ── */
 #toast {
   position:fixed; bottom:22px; left:50%;
@@ -408,7 +408,7 @@ input[type="text"]::placeholder { color: var(--muted); }
 #toast.show { transform:translateX(-50%) translateY(0); }
 #toast.w { background:linear-gradient(135deg,#880010,#cc1828,#ff5060,#cc1828,#880010); color:#fff; }
 #toast.ok { background:linear-gradient(135deg,#006070,#10a8b0,#40e8f0,#10a8b0,#006070); color:#fff; }
-
+ 
 @media(max-width:380px){
   .bc,.sc{font-size:12px;padding:0 8px;height:38px}
   .arow{flex-direction:column}
@@ -416,7 +416,7 @@ input[type="text"]::placeholder { color: var(--muted); }
 </style>
 </head>
 <body>
-
+ 
 <header>
   <div>
     <div class="logo">FLIP 7</div>
@@ -424,7 +424,7 @@ input[type="text"]::placeholder { color: var(--muted); }
   </div>
   <div class="round-pill" id="rpill" style="display:none">MANCHE <strong id="rnum">1</strong></div>
 </header>
-
+ 
 <!-- SETUP -->
 <div class="screen active" id="s0">
   <div class="panel">
@@ -438,7 +438,7 @@ input[type="text"]::placeholder { color: var(--muted); }
     <button class="btn full" id="stbtn" onclick="startGame()" disabled>Démarrer →</button>
   </div>
 </div>
-
+ 
 <!-- ENTRY -->
 <div class="screen" id="s1">
   <div class="panel" style="padding:13px 15px;margin-bottom:11px">
@@ -448,7 +448,7 @@ input[type="text"]::placeholder { color: var(--muted); }
   <div id="pc"></div>
   <button class="btn teal full" onclick="validate()">Valider la manche →</button>
 </div>
-
+ 
 <!-- BOARD -->
 <div class="screen" id="s2">
   <div id="we" style="display:none"></div>
@@ -474,9 +474,9 @@ input[type="text"]::placeholder { color: var(--muted); }
     <button class="btn red" onclick="reset()">Nouvelle partie</button>
   </div>
 </div>
-
+ 
 <div id="toast"></div>
-
+ 
 <script>
 const NUMS=[0,1,2,3,4,5,6,7,8,9,10,11,12];
 const BON=[
@@ -494,9 +494,9 @@ const SPC=[
 ];
 const F7=15, WIN=200;
 let P=[], round=1, S={};
-
+ 
 document.getElementById('ni').addEventListener('keydown',e=>{if(e.key==='Enter')addP()});
-
+ 
 function addP(){
   const el=document.getElementById('ni'), n=el.value.trim();
   if(!n||P.find(p=>p.n.toLowerCase()===n.toLowerCase())){shk(el);return}
@@ -516,7 +516,7 @@ function startGame(){
   document.getElementById('rpill').style.display='';
   goEntry();
 }
-
+ 
 function goEntry(){
   updatePill();
   document.getElementById('etit').textContent=`Fin de manche ${round}`;
@@ -526,9 +526,9 @@ function goEntry(){
   P.forEach(p=>refreshUI(p.n));
   show('s1');window.scrollTo(0,0);
 }
-
+ 
 function sid(n){return n.replace(/[^a-zA-Z0-9]/g,'_')}
-
+ 
 function buildPC(p){
   const s=sid(p.n);
   const nums=NUMS.map(v=>`
@@ -564,7 +564,7 @@ function buildPC(p){
     <div class="live" id="lv-${s}">Score ce tour : <strong>0</strong></div>
   </div>`;
 }
-
+ 
 /* ── TAP NUMBER
    - 1er clic  → sélectionne
    - 2e clic   → désélectionne  ← NOUVEAU
@@ -573,7 +573,7 @@ function buildPC(p){
 function tapN(name,val){
   const sel=S[name]; if(sel.bust) return;
   const cur=sel.nums[val]||0;
-
+ 
   if(cur===1){
     // Déjà sélectionné → on désélectionne
     sel.nums[val]=0;
@@ -582,28 +582,28 @@ function tapN(name,val){
     sel.f7=cnt===7;
     refreshUI(name); return;
   }
-
+ 
   // Pas encore sélectionné → on ajoute
   sel.nums[val]=1;
   const cnt=Object.values(sel.nums).reduce((a,c)=>a+c,0);
-
+ 
   // Vérifier doublon (ne devrait pas arriver car on désélectionne au 2e clic,
   // mais sécurité si on avait déjà 1 d'une autre façon)
   if(cnt>7){
     // Trop de cartes — on ignore
     sel.nums[val]=0; return;
   }
-
+ 
   if(cnt===7) sel.f7=true;
   refreshUI(name);
 }
-
+ 
 /* ── SECONDE CHANCE : si sélectionnée et qu'on reçoit un doublon
    Elle est déjà dans sel.spc — au moment du doublon on la consomme.
    Mais comme on ne peut plus avoir de doublon (on désélectionne au 2e clic),
    la 2nde Chance protège si le joueur OUBLIE de désélectionner et retape :
    le mécanisme reste pour compatibilité mais le toggle l'évite naturellement. */
-
+ 
 function tapB(name,id){
   const sel=S[name]; if(sel.bust) return;
   sel.bon[id]=((sel.bon[id]||0)+1)%4;
@@ -612,7 +612,7 @@ function tapB(name,id){
   document.getElementById(`bcc-${s}-${id}`).textContent=c>1?`×${c}`:'';
   refreshScore(name);
 }
-
+ 
 function tapS(name,id){
   const sel=S[name]; if(sel.bust) return;
   sel.spc[id]=((sel.spc[id]||0)+1)%4;
@@ -620,7 +620,7 @@ function tapS(name,id){
   document.getElementById(`sc-${s}-${id}`).classList.toggle('on',c>0);
   document.getElementById(`scc-${s}-${id}`).textContent=c>1?`×${c}`:'';
 }
-
+ 
 function forceB(name,busted){
   const sel=S[name],s=sid(name);
   if(busted){sel.bust=true;sel.f7=false;applyBust(name);}
@@ -637,7 +637,7 @@ function forceB(name,busted){
     refreshUI(name);
   }
 }
-
+ 
 function applyBust(name){
   const s=sid(name);
   document.getElementById(`pc-${s}`).classList.add('busted');
@@ -648,7 +648,7 @@ function applyBust(name){
   document.querySelectorAll(`[id^="nc-${s}-"],[id^="bc-${s}-"],[id^="sc-${s}-"]`).forEach(b=>b.disabled=true);
   refreshScore(name);
 }
-
+ 
 function refreshUI(name){
   const sel=S[name],s=sid(name);
   const cnt=Object.values(sel.nums).reduce((a,c)=>a+c,0);
@@ -671,12 +671,12 @@ function refreshUI(name){
   document.getElementById(`pc-${s}`).classList.toggle('busted',sel.bust);
   refreshScore(name);
 }
-
+ 
 function refreshScore(name){
   const pts=calc(S[name]);
   document.getElementById(`lv-${sid(name)}`).innerHTML=`Score ce tour : <strong>${pts}</strong>`;
 }
-
+ 
 function calc(sel){
   if(sel.bust) return 0;
   let b=Object.entries(sel.nums).reduce((a,[v,c])=>a+Number(v)*c,0);
@@ -685,7 +685,7 @@ function calc(sel){
   if(sel.f7) b+=F7;
   return b;
 }
-
+ 
 function validate(){
   const pts=P.map(p=>({n:p.n,pts:calc(S[p.n])}));
   const mx=Math.max(...pts.map(r=>r.pts));
@@ -700,7 +700,7 @@ function validate(){
   round++; toast('✓ MANCHE ENREGISTRÉE');
   renderBoard(); show('s2'); window.scrollTo(0,0);
 }
-
+ 
 function renderBoard(){
   const sorted=[...P].sort((a,b)=>b.tot-a.tot);
   const cr=round-1;
@@ -713,7 +713,7 @@ function renderBoard(){
     we.innerHTML=`<div class="wbox"><span class="cr">🏆</span><h3>${winner.n} gagne !</h3><p>${winner.tot} points — Fin de partie !</p></div>`;
     document.getElementById('nb').style.display='none';
   }else{we.style.display='none';document.getElementById('nb').style.display='';}
-
+ 
   document.getElementById('sb').innerHTML=sorted.map((p,i)=>{
     const last=p.h[p.h.length-1];
     const tags=[];
@@ -727,7 +727,7 @@ function renderBoard(){
       <div style="text-align:right;flex-shrink:0"><div class="rp">+${last?.pts??0} ce tour</div><div class="tot">${p.tot}</div></div>
     </div>`;
   }).join('');
-
+ 
   if(P[0].h.length>0){
     document.getElementById('hs').style.display='';
     const hdrs=['#',...P.map(p=>p.n)];
@@ -743,7 +743,7 @@ function renderBoard(){
     }).join('');
     document.getElementById('ht').innerHTML=hr+rows;
   }
-
+ 
   if(cr>=1){
     document.getElementById('ss').style.display='';
     let best={n:'—',s:0};
@@ -760,7 +760,7 @@ function renderBoard(){
       <div class="stcard r"><div class="sl">💥 Crevé</div><div class="sv">${blc}×</div><div class="ss">${blc>0?bl.n:'Personne'}</div></div>`;
   }
 }
-
+ 
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
 function updatePill(){document.getElementById('rnum').textContent=round}
 function shk(el){el.style.borderColor='rgba(204,24,40,.7)';setTimeout(()=>el.style.borderColor='',700);el.focus()}
